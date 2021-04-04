@@ -1,6 +1,6 @@
 {
 	"name": "git-branches-ci-cd",
-	"displayName": "Git Branches CI/CD",
+	"displayName": "Git: Branch CI/CD",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -10,14 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:git-branches-ci-cd.helloWorld"
+		"onCommand:git-branches-ci-cd.initBranchTask"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "git-branches-ci-cd.helloWorld",
-				"title": "Hello World"
+				"command": "git-branches-ci-cd.initBranchTask",
+				"title": "Git: Branch CI/CD"
 			}
 		]
 	},
