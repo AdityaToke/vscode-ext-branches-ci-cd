@@ -37,22 +37,23 @@ function getWebviewContent(context: vscode.ExtensionContext): string {
 
 	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
 	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
+	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'style.css')).fsPath, 'utf8');
+
 	return `
 	<!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    ${styleFileData}
+</style>
 <body>
-
     ${htmlBodyData}
-
 <script>
 	${jsFileData}
 </script>
-
 </body>
-
 </html>
 	`;
 }
