@@ -4,8 +4,6 @@ import * as fs from 'fs'
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('git-branches-ci-cd.initBranchTask', () => {
-		vscode.window.showInformationMessage('Hello World from Git Branches CI/CD!');
-
 
 		const columnToShowIn = vscode.window.activeTextEditor
 			? vscode.window.activeTextEditor.viewColumn
@@ -14,14 +12,20 @@ export function activate(context: vscode.ExtensionContext) {
 		if (currentPanel) {
 			currentPanel.reveal(columnToShowIn);
 		} else {
+			vscode.window.showInformationMessage('Hello World from Git Branches CI/CD!');
 			currentPanel = vscode.window.createWebviewPanel(
 				'parentWebViewScreen',
 				'Git: Branch CI/CD',
 				vscode.ViewColumn.One,
 				{
-					enableScripts: true
+					enableScripts: true,
+					localResourceRoots: [
+						vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js'))
+					]
 				}
 			);
+
+			currentPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')))
 			currentPanel.webview.html = getWebviewContent(context);
 		}
 	});
@@ -30,8 +34,27 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function getWebviewContent(context: vscode.ExtensionContext): string {
-	const filePath: vscode.Uri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'index.html'));
-	return fs.readFileSync(filePath.fsPath, 'utf8');
+
+	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
+	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
+	return `
+	<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<body>
+
+    ${htmlBodyData}
+
+<script>
+	${jsFileData}
+</script>
+
+</body>
+
+</html>
+	`;
 }
 // this method is called when your extension is deactivated
 export function deactivate() { }
