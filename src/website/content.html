@@ -1,11 +1,96 @@
-<div ng-app="myApp" ng-controller="customersCtrl">
+<div ng-app="myApp" ng-controller="customersCtrl" class="main_div">
 
-    <div class="header_parent_div">
-        <input type="text" placeholder="Search" class="search_input_tag">
-        <button type="button" ng-if="isMultiSelected" class="btn btn-danger">Delete</button>
-        <button type="button" ng-if="isMultiSelected" class="btn btn-warning">Merge</button>
-        <button type="button" class="btn btn-primary" ng-click="showAddModal()">Add</button>
-        <i title="Refresh" class="refresh_icon fa fa-refresh"></i>
+  <div class="header_parent_div">
+    <input type="text" placeholder="Search" class="search_input_tag">
+    <button type="button" ng-if="isMultiSelected" class="btn btn-danger">Delete</button>
+    <button type="button" ng-if="isMultiSelected" class="btn btn-warning">Merge</button>
+    <button type="button" ng-if="!showAddSection" class="btn btn-primary" ng-click="showAddModal()">Add</button>
+    <i title="Refresh" class="refresh_icon fa fa-refresh"></i>
+  </div>
+  <article>
+    Last Refreshed On : {{ lastRefreshedOn }}
+  </article>
+  <!-- Add Section -->
+  <section ng-if="showAddSection" class="add_section_tag">
+    <header class="add_section_tag_header">
+      <span>
+        Add Branches
+      </span>
+      <i class="fa fa-times cross_icon" ng-click="showAddModal()"></i>
+    </header>
+    <div class="add_section_tag_content">
+      <div class="workspace_input_block">
+        <label for="workspaceInput">Enter your workspace name:</label>
+        <input list="workspace_list" name="workspaceInput" class="add_section_input_tag"
+          placeholder="Enter your workspace name" />
+        <datalist id="workspace_list">
+          <option value="Gryfindor">
+          <option value="Hufflepuff">
+          <option value="Slytherin">
+          <option value="Ravenclaw">
+          <option value="Horned Serpent">
+          <option value="Thunderbird">
+          <option value="Pukwudgie">
+          <option value="Wampus">
+        </datalist>
+      </div>
+      <div class="branches_input_block">
+
+        <div class="parent_block">
+          <label for="parentBranch">Parent Branch:</label>
+          <input list="parent_branch_list" name="parentBranch" class="add_section_input_tag"
+            placeholder="Enter Branch Name" />
+          <datalist id="parent_branch_list">
+            <option value="Gryfindor">
+            <option value="Hufflepuff">
+            <option value="Slytherin">
+            <option value="Ravenclaw">
+            <option value="Horned Serpent">
+            <option value="Thunderbird">
+            <option value="Pukwudgie">
+            <option value="Wampus">
+          </datalist>
+        </div>
+        <div class="line"></div>
+        <div class="child_block">
+          <label for="childBranch">Child Branch:</label>
+          <input list="child_branch_list" name="childBranch" class="add_section_input_tag"
+            placeholder="Enter Branch Name" />
+          <datalist id="child_branch_list">
+            <option value="Gryfindor">
+            <option value="Hufflepuff">
+            <option value="Slytherin">
+            <option value="Ravenclaw">
+            <option value="Horned Serpent">
+            <option value="Thunderbird">
+            <option value="Pukwudgie">
+            <option value="Wampus">
+          </datalist>
+        </div>
+      </div>
     </div>
-
+    <div class="add_section_tag_footer">
+      <button type="button" class="btn btn-primary" ng-click="showAddModal()">Add</button>
+    </div>
+  </section>
+  <!-- Work place -->
+  <section>
+    <details ng-repeat="data in applicationData">
+      <summary class="title" ng-class="data.id">{{ data.name }}</summary>
+      <div class="content">
+        <table>
+          <tr>
+            <th>Parent Branch</th>
+            <th>Child Branch</th>
+            <th>Status</th>
+          </tr>
+          <tr ng-class="data.id+'qwerty'" ng-repeat="branchDetails in data.branch_data">
+            <td>{{ branchDetails.parent_branch }}</td>
+            <td>{{ branchDetails.child_branch }}</td>
+            <td>{{ branchDetails.status }}</td>
+          </tr>
+        </table>
+      </div>
+    </details>
+  </section>
 </div>

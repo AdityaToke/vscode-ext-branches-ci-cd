@@ -1,6 +1,13 @@
 * {
     outline: transparent !important;
 }
+
+.main_div {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 /* Header start */
 .header_parent_div {
     display: flex;
@@ -21,7 +28,155 @@
     flex: 1 1 50%;
 }
 
+/* Add dialog part */
+
+.add_section_tag {
+    border: 2px solid antiquewhite;
+    padding: 1rem;
+}
+
+.add_section_tag_header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 2rem;
+    border-bottom: 1px solid antiquewhite;
+}
+
+.add_section_tag_header .cross_icon {
+    cursor: pointer;
+}
+.add_section_tag_content {
+    display: grid;
+    grid-template-columns: 100%;
+    font-size: 15px;
+    grid-gap: 10px;
+}
+
+.branches_input_block {
+    display: grid;
+    grid-template-columns: 50% auto 50%;
+    font-size: 15px;
+    grid-gap: 10px;
+}
+
+.add_section_tag_content .branches_input_block .parent_block,
+.add_section_tag_content .workspace_input_block,
+.add_section_tag_content .branches_input_block .child_block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.add_section_tag_content .line {
+    border-left: 1px solid antiquewhite;
+}
+
+.add_section_input_tag {
+    height: 2rem;
+    width: 70%;
+    border-radius: 2px;
+    border: transparent;
+    padding: 0 0.75rem;
+}
+
+.add_section_tag_footer {
+    text-align: end;
+}
+
+/* Body Part */
+details {
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.title {
+    cursor: pointer;
+    user-select: none;
+    color: #0f123f;
+}
+
+.content {
+    border-top: 1px whitesmoke;
+}
+
+summary {
+    padding: 0.5rem 0.75rem;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Table Design */
+
+table, th, td {
+    border: 1px solid antiquewhite;
+    border-collapse: collapse;
+    padding: 5px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    table-layout: fixed;
+    word-break: break-all;
+}
+
+th {
+    user-select: none;
+}
+
+td {
+    font-weight: lighter;
+}
+
+td::selection {
+    background: white;
+    color: #212529;
+}
+
+table {
+    width: 100%;
+}
+
+/* Branch Status */
+
+.merging {
+    background: var(--purple);
+}
+
+.ready_to_merge {
+    background: var(--green);
+}
+
+.merge_conflicts {
+    background: var(--red);
+}
+
+.up_to_date {
+    background: var(--yellow);
+}
+
 /* Global button */
+
+:root {
+    --purple: #a767c7;
+    --green: #4bd8ae;
+    --red: #ee786c;
+    --yellow: #fac73a;
+}
+
+datalist {
+    background-color: red;
+}
+
 .btn,
 .refresh_icon {
     display: inline-block;
@@ -35,9 +190,9 @@
     user-select: none;
     background-color: transparent;
     border: 1px solid transparent;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem 1.25rem;
     line-height: 1.35;
-    border-radius: 0.25rem;
+    border-radius: 2px;
     cursor: pointer;
     -webkit-appearance: button;
     height: 100%;

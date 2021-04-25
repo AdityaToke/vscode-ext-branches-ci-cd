@@ -1,0 +1,2 @@
+1. need to separate the css from one common file.
+2. also check the same for HTML.
