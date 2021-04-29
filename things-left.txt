@@ -1,0 +1,30 @@
+*********** UI ************
+checkbox not added.
+add delete and merge button inside the required tab header.
+add verify button in add modal so that they can verify if the branch is present or not.
+
+
+********** JSON ***********
+
+1. Main data
+
+a. 
+last_refreshed_on : ""
+
+b.
+branch_data: [
+    {
+        parent_branch: "",
+        child_branch: "",
+        status: "",  ------------> just as identifier to sort the data
+        is_checked: "",
+    }
+]
+
+2. Temp data
+
+current_branch:{
+    name: "",
+    is_stash: "",
+    stash_id: ""
+}
