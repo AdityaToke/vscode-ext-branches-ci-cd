@@ -10,6 +10,28 @@
   <article>
     Last Refreshed On : {{ lastRefreshedOn }}
   </article>
+  <!-- Workspace dropdown -->
+  <article class="dropdown_block">
+    <label for="workspaceInput">Select your workspace :</label>
+    <select id="cars" class="dropdown_input workspace_dropdown">
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="mercedes">Mercedes</option>
+      <option value="audi">Audi</option>
+    </select>
+    <!-- <input list="workspace_list" name="workspaceInput" class="dropdown_input" value="Gryfindor"
+      placeholder="Select your workspace" />
+    <datalist id="workspace_list">
+      <option value="Gryfindor">
+      <option value="Hufflepuff">
+      <option value="Slytherin">
+      <option value="Ravenclaw">
+      <option value="Horned Serpent">
+      <option value="Thunderbird">
+      <option value="Pukwudgie">
+      <option value="Wampus">
+    </datalist> -->
+  </article>
   <!-- Add Section -->
   <section ng-if="showAddSection" class="add_section_tag">
     <header class="add_section_tag_header">
@@ -19,9 +41,9 @@
       <i class="fa fa-times cross_icon" ng-click="showAddModal()"></i>
     </header>
     <div class="add_section_tag_content">
-      <div class="workspace_input_block">
+      <div class="workspace_input_block dropdown_block">
         <label for="workspaceInput">Enter your workspace name:</label>
-        <input list="workspace_list" name="workspaceInput" class="add_section_input_tag"
+        <input list="workspace_list" name="workspaceInput" class="dropdown_input"
           placeholder="Enter your workspace name" />
         <datalist id="workspace_list">
           <option value="Gryfindor">
@@ -36,10 +58,9 @@
       </div>
       <div class="branches_input_block">
 
-        <div class="parent_block">
+        <div class="parent_block dropdown_block">
           <label for="parentBranch">Parent Branch:</label>
-          <input list="parent_branch_list" name="parentBranch" class="add_section_input_tag"
-            placeholder="Enter Branch Name" />
+          <input list="parent_branch_list" name="parentBranch" class="dropdown_input" placeholder="Enter Branch Name" />
           <datalist id="parent_branch_list">
             <option value="Gryfindor">
             <option value="Hufflepuff">
@@ -52,10 +73,9 @@
           </datalist>
         </div>
         <div class="line"></div>
-        <div class="child_block">
+        <div class="child_block dropdown_block">
           <label for="childBranch">Child Branch:</label>
-          <input list="child_branch_list" name="childBranch" class="add_section_input_tag"
-            placeholder="Enter Branch Name" />
+          <input list="child_branch_list" name="childBranch" class="dropdown_input" placeholder="Enter Branch Name" />
           <datalist id="child_branch_list">
             <option value="Gryfindor">
             <option value="Hufflepuff">
@@ -73,7 +93,7 @@
       <button type="button" class="btn btn-primary" ng-click="showAddModal()">Add</button>
     </div>
   </section>
-  <!-- Work place -->
+  <!-- Branch Data and Status Section -->
   <section>
     <details ng-repeat="data in applicationData">
       <summary class="title" ng-class="data.id">{{ data.name }}</summary>
