@@ -18,6 +18,7 @@ const dummyJson = [
         id: "merging",
         branch_data: [
             {
+                is_checked: false,
                 parent_branch: "develop",
                 child_branch: "feature/trailing-slash",
                 status: "Merging"
@@ -29,6 +30,7 @@ const dummyJson = [
         id: "ready_to_merge",
         branch_data: [
             {
+                is_checked: false,
                 parent_branch: "develop",
                 child_branch: "feature/trailing-slash-v2",
                 status: "The branch is ready to merge in parent branch."
@@ -40,6 +42,7 @@ const dummyJson = [
         id: "merge_conflicts",
         branch_data: [
             {
+                is_checked: false,
                 parent_branch: "develop",
                 child_branch: "feature/trailing-slash-v3",
                 status: "Their are total 23 merge conflicts, please manually merge the branch and resolve the conflicts."
@@ -51,6 +54,7 @@ const dummyJson = [
         id: "up_to_date",
         branch_data: [
             {
+                is_checked: false,
                 parent_branch: "develop",
                 child_branch: "feature/trailing-slash",
                 status: "Your branch is up to date."

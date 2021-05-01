@@ -90,16 +90,20 @@
 
 /* Body Part */
 details {
-    /* padding: 0.25rem 0.5rem 0.25rem 0; */
     border-radius: 2px;
     font-size: 16px;
     font-weight: 500;
 }
 
-.title {
+.header {
     cursor: pointer;
     user-select: none;
     color: #0f123f;
+    display: grid;
+    grid-template-columns: 1% auto 9% 9%;
+    align-items: center;
+    grid-gap: 10px;
+    grid-template-rows: 5vh;
 }
 
 .content {
