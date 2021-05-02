@@ -2,28 +2,12 @@
 
 we will verify automatically the branch of parent and child.
 
+********** ADVANCED TEST CASE **********
 
-********** JSON ***********
+1. 
+onDidChangeViewState
+https://code.visualstudio.com/api/extension-guides/webview
+( also check all the condition mentioned in this page )
 
-1. Main data
+********** DATA STRUCTRING ***********
 
-a. 
-last_refreshed_on : ""
-
-b.
-branch_data: [
-    {
-        parent_branch: "",
-        child_branch: "",
-        status: "",  ------------> just as identifier to sort the data
-        is_checked: "",
-    }
-]
-
-2. Temp data
-
-current_branch:{
-    name: "",
-    is_stash: "",
-    stash_id: ""
-}

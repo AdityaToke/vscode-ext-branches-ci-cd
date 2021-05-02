@@ -35,10 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
 				ext_data = baseDataStructure;
 			}
 			ext_data = context.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-			console.log(ext_data, "asd");
-			
 			currentPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')))
 			currentPanel.webview.html = getWebviewContent(context);
+      		currentPanel.webview.postMessage(ext_data);
+			console.log(ext_data, "asd");
 		}
 	});
 
