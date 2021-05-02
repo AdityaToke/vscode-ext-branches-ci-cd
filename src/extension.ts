@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path'
 import * as fs from 'fs'
+import { GlobalDetails } from './models/enum/global.enum';
+import { baseDataStructure } from './models/data/base-data-structure';
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('git-branches-ci-cd.initBranchTask', () => {
@@ -24,7 +26,17 @@ export function activate(context: vscode.ExtensionContext) {
 					]
 				}
 			);
-
+			// add the remove this cmd to start with fresh data
+			//context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, "");
+			let ext_data;
+			if (!context.globalState.get(GlobalDetails.PARENT_CACHE_KEY)) {
+				context.globalState.get(GlobalDetails.PARENT_CACHE_KEY,"");
+				context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, baseDataStructure);
+				ext_data = baseDataStructure;
+			}
+			ext_data = context.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+			console.log(ext_data, "asd");
+			
 			currentPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')))
 			currentPanel.webview.html = getWebviewContent(context);
 		}

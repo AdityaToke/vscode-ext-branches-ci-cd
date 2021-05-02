@@ -3,7 +3,7 @@
   <div class="header_parent_div">
     <input type="text" placeholder="Search" class="search_input_tag">
     <button type="button" ng-if="!showAddSection" class="btn btn-primary" ng-click="showAddModal()">Add</button>
-    <i title="Refresh" class="refresh_icon fa fa-refresh"></i>
+    <i title="Refresh" class="refresh_icon fa fa-refresh" ng-click="refreshTable()"></i>
   </div>
   <article>
     Last Refreshed On : {{ lastRefreshedOn }}
@@ -46,32 +46,12 @@
 
         <div class="parent_block dropdown_block">
           <label for="parentBranch">Parent Branch:</label>
-          <input list="parent_branch_list" name="parentBranch" class="dropdown_input" placeholder="Enter Branch Name" />
-          <datalist id="parent_branch_list">
-            <option value="Gryfindor">
-            <option value="Hufflepuff">
-            <option value="Slytherin">
-            <option value="Ravenclaw">
-            <option value="Horned Serpent">
-            <option value="Thunderbird">
-            <option value="Pukwudgie">
-            <option value="Wampus">
-          </datalist>
+          <input name="parentBranch" class="dropdown_input" placeholder="Enter Branch Name" />
         </div>
         <div class="line"></div>
         <div class="child_block dropdown_block">
           <label for="childBranch">Child Branch:</label>
-          <input list="child_branch_list" name="childBranch" class="dropdown_input" placeholder="Enter Branch Name" />
-          <datalist id="child_branch_list">
-            <option value="Gryfindor">
-            <option value="Hufflepuff">
-            <option value="Slytherin">
-            <option value="Ravenclaw">
-            <option value="Horned Serpent">
-            <option value="Thunderbird">
-            <option value="Pukwudgie">
-            <option value="Wampus">
-          </datalist>
+          <input name="childBranch" class="dropdown_input" placeholder="Enter Branch Name" />
         </div>
       </div>
     </div>
@@ -84,13 +64,14 @@
     <details ng-repeat="data in applicationData">
       <summary class="header" ng-class="data.id">
         <span>{{ data.name }}</span>
-        <button type="button" class="btn btn-danger">Delete</button>
-        <button type="button" class="btn btn-warning">Merge</button>
+        <!-- Uncomment on build -->
+       <!--  <button type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-warning">Merge</button> -->
       </summary>
       <div class="content">
         <table>
           <tr>
-            <th style="width: 3.75%;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"></th>
+            <th style="width: 3%;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"></th>
             <th>Parent Branch</th>
             <th>Child Branch</th>
             <th>Status</th>

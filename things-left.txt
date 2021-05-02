@@ -1,6 +1,6 @@
 *********** UI ************
 
-add verify button in add modal so that they can verify if the branch is present or not.
+we will verify automatically the branch of parent and child.
 
 
 ********** JSON ***********

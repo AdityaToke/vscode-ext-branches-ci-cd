@@ -104,6 +104,7 @@ details {
     align-items: center;
     grid-gap: 10px;
     grid-template-rows: 5vh;
+    border-radius: 2px;
 }
 
 .content {

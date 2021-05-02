@@ -6,6 +6,9 @@ app.controller('customersCtrl', function ($scope, $http) {
     $scope.showAddSection = false;
     $scope.lastRefreshedOn = new Date();
     $scope.applicationData = dummyJson;
+    $scope.refreshTable = function () {
+        $scope.lastRefreshedOn = new Date();
+    };
     $scope.showAddModal = function () {
         $scope.showAddSection = !$scope.showAddSection;
     }
