@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			);
 			// add the remove this cmd to start with fresh data
-			//context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, "");
+			context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, "");
 			let ext_data;
 			if (!context.globalState.get(GlobalDetails.PARENT_CACHE_KEY)) {
 				context.globalState.get(GlobalDetails.PARENT_CACHE_KEY,"");
@@ -49,7 +49,8 @@ function getWebviewContent(context: vscode.ExtensionContext): string {
 
 	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
 	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
-	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'style.css')).fsPath, 'utf8');
+	const globalStyleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website','css', 'global.css')).fsPath, 'utf8');
+	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website','css', 'style.css')).fsPath, 'utf8');
 
 	return `
 	<!DOCTYPE html>
@@ -57,6 +58,9 @@ function getWebviewContent(context: vscode.ExtensionContext): string {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    ${globalStyleFileData}
+</style>
 <style>
     ${styleFileData}
 </style>

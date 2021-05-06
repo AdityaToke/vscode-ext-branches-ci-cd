@@ -4,7 +4,6 @@ export interface IBranchDetails {
     parent_branch: string;
     child_branch: string;
     status: string;
-    pills: string;
     is_checked: boolean;
 }
 

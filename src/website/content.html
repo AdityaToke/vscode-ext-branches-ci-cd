@@ -6,7 +6,7 @@
     <i title="Refresh" class="refresh_icon fa fa-refresh" ng-click="refreshTable()"></i>
   </div>
   <article>
-    Last Refreshed On : {{ lastRefreshedOn }}
+    Last Refreshed On : {{ applicationData.last_refreshed_on }}
   </article>
   <!-- Workspace dropdown -->
   <article class="dropdown_block">
@@ -61,22 +61,21 @@
   </section>
   <!-- Branch Data and Status Section -->
   <section>
-    <details ng-repeat="data in applicationData">
+    <details ng-repeat="data in applicationData.status_details">
       <summary class="header" ng-class="data.id">
         <span>{{ data.name }}</span>
-        <!-- Uncomment on build -->
-       <!--  <button type="button" class="btn btn-danger">Delete</button>
-        <button type="button" class="btn btn-warning">Merge</button> -->
+        <button type="button" ng-if="data.is_deletable" class="action_button btn btn-danger">Delete</button>
+        <button type="button" ng-if="data.is_mergable" class="action_button btn btn-warning">Merge</button>
       </summary>
       <div class="content">
         <table>
           <tr>
-            <th style="width: 3%;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"></th>
+            <th style="width: 3vw;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"></th>
             <th>Parent Branch</th>
             <th>Child Branch</th>
             <th>Status</th>
           </tr>
-          <tr ng-class="data.id+'qwerty'" ng-repeat="branchDetails in data.branch_data">
+          <tr ng-class="data.id+'qwerty'" ng-repeat="branchDetails in applicationData.branch_data[data.id]">
             <td><input type="checkbox" ng-value="branchDetails.is_checked"></td>
             <td>{{ branchDetails.parent_branch }}</td>
             <td>{{ branchDetails.child_branch }}</td>

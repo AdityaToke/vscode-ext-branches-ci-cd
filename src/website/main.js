@@ -3,13 +3,12 @@ var app = angular.module('myApp', []);
 
 app.controller('customersCtrl', function ($scope, $http) {
     window.addEventListener('message', event => {
-
-        console.log(event.data, "+++++ aditya +++++")
+        $scope.applicationData = event.data;
+        $scope.$apply();
     });
     $scope.isMultiSelected = false;
     $scope.showAddSection = false;
     $scope.lastRefreshedOn = new Date();
-    $scope.applicationData = dummyJson;
     $scope.refreshTable = function () {
         $scope.lastRefreshedOn = new Date();
     };
