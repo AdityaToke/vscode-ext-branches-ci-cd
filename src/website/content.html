@@ -27,20 +27,25 @@
       <i class="fa fa-times cross_icon" ng-click="showAddModal()"></i>
     </header>
     <div class="add_section_tag_content">
-      <div class="workspace_input_block dropdown_block">
-        <label for="workspaceInput">Enter your workspace name:</label>
-        <input list="workspace_list" name="workspaceInput" class="dropdown_input"
-          placeholder="Enter your workspace name" />
-        <datalist id="workspace_list">
-          <option value="Gryfindor">
-          <option value="Hufflepuff">
-          <option value="Slytherin">
-          <option value="Ravenclaw">
-          <option value="Horned Serpent">
-          <option value="Thunderbird">
-          <option value="Pukwudgie">
-          <option value="Wampus">
-        </datalist>
+      <div class="workspace_input_block">
+        <span ng-if="!showWorkspaceDropdown" class="dropdown_block">
+          <label for="workspaceInput">Enter your workspace name:</label>
+          <input list="workspace_list" name="workspaceInput" class="dropdown_input"
+            placeholder="Enter your workspace name" />
+        </span>
+        <span ng-if="showWorkspaceDropdown" class="dropdown_block">
+          <label for="workSpaceExistingSelect">Select your workspace name:</label>
+          <select id="cars" name="workSpaceExistingSelect" class="dropdown_input workspace_dropdown">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="mercedes">Mercedes</option>
+            <option value="audi">Audi</option>
+          </select>
+        </span>
+        <span>
+          <input type="checkbox" ng-click="toggleWorkspaceDropdownInAddModal()">
+          <label>Select from existing workspace.</label>
+        </span>
       </div>
       <div class="branches_input_block">
 

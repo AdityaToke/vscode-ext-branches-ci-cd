@@ -4,7 +4,9 @@ import * as fs from 'fs'
 import { GlobalDetails } from './models/enum/global.enum';
 import { baseDataStructure } from './models/data/base-data-structure';
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
+let globalContext: vscode.ExtensionContext;
 export function activate(context: vscode.ExtensionContext) {
+	globalContext = context;
 	let disposable = vscode.commands.registerCommand('git-branches-ci-cd.initBranchTask', () => {
 
 		const columnToShowIn = vscode.window.activeTextEditor
@@ -22,35 +24,40 @@ export function activate(context: vscode.ExtensionContext) {
 				{
 					enableScripts: true,
 					localResourceRoots: [
-						vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js'))
+						vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'main.js'))
 					]
 				}
 			);
 			// add the remove this cmd to start with fresh data
-			context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, "");
+			globalContext.globalState.update(GlobalDetails.PARENT_CACHE_KEY, "");
 			let ext_data;
-			if (!context.globalState.get(GlobalDetails.PARENT_CACHE_KEY)) {
-				context.globalState.get(GlobalDetails.PARENT_CACHE_KEY,"");
-				context.globalState.update(GlobalDetails.PARENT_CACHE_KEY, baseDataStructure);
+			if (!globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY)) {
+				globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY,"");
+				globalContext.globalState.update(GlobalDetails.PARENT_CACHE_KEY, baseDataStructure);
 				ext_data = baseDataStructure;
 			}
-			ext_data = context.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-			currentPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')))
-			currentPanel.webview.html = getWebviewContent(context);
-      		currentPanel.webview.postMessage(ext_data);
-			console.log(ext_data, "asd");
+			ext_data = globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+			currentPanel.webview.asWebviewUri(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'main.js')))
+			currentPanel.webview.html = getWebviewContent();
+			sendMessage("APPLICATION_DATA", ext_data);
 		}
 	});
 
-	context.subscriptions.push(disposable);
+	globalContext.subscriptions.push(disposable);
 }
 
-function getWebviewContent(context: vscode.ExtensionContext): string {
+function receiveMessage() {}
+function sendMessage(action: string, data: any): void {
+	if (currentPanel) {
+		currentPanel.webview.postMessage({ action: action, data: data });
+	}
+}
+function getWebviewContent(): string {
 
-	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
-	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
-	const globalStyleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website','css', 'global.css')).fsPath, 'utf8');
-	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(context.extensionPath, 'src', 'website','css', 'style.css')).fsPath, 'utf8');
+	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
+	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
+	const globalStyleFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website','css', 'global.css')).fsPath, 'utf8');
+	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website','css', 'style.css')).fsPath, 'utf8');
 
 	return `
 	<!DOCTYPE html>
