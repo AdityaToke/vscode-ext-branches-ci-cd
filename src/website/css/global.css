@@ -98,3 +98,7 @@ button[disabled] {
 .text-sm {
     font-size: smaller;
 }
+
+.text-xxlarge{
+    font-size: xx-large;
+}

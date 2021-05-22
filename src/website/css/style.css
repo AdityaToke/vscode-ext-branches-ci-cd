@@ -12,6 +12,23 @@
     padding: 1rem 0;
 }
 
+/* Empty message of project */
+
+.no_data_message_section {
+    border: 2px solid;
+    padding: 1rem;
+}
+
+.no_data_message_section__description h3 {
+    margin: 0;
+    font-weight: 400;
+}
+
+.no_data_message_section__description ol {
+    margin: 0;
+    line-height: 20px;
+}
+
 /* Header start */
 .header_parent_div {
     display: flex;

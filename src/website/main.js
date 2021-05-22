@@ -11,9 +11,8 @@ app.controller('customersCtrl', function ($scope, $http) {
         switch (action) {
             case "application_data":
                 $scope.applicationData = data;
-                $scope.project_dropdown_value = Object.keys(data.branch_data);
+                $scope.project_dropdown_value = Array.from(new Set([...Object.keys(data.branch_data), ...data.current_projects]));
                 $scope.currentProject = Object.keys(data.branch_data)[0];
-                $scope.existing_project_dropdown_value = data.current_projects;
 
                 // add
                 resetAddSectionValue();
