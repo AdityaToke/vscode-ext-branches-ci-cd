@@ -1,6 +1,7 @@
 *********** UI ************
 
-we will verify automatically the branch of parent and child.
+2. hiding of the action button delete merge etc etc
+3. checkbox implementation
 
 ********** ADVANCED TEST CASE **********
 
