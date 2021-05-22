@@ -86,17 +86,23 @@
       <div class="content">
         <table>
           <tr>
-            <th style="width: 3vw;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"></th>
+            <th style="width: 23px;"><input type="checkbox" name="selectAllCheckBox" ng-id="data.id"
+              ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0"></th>
             <th>Parent Branch</th>
             <th>Child Branch</th>
             <th>Status</th>
           </tr>
-          <tr ng-class="data.id+'qwerty'"
+          <tr ng-class="data.id+'qwerty'" ng-if="applicationData.branch_data[currentProject][data.id].length"
             ng-repeat="branchDetails in applicationData.branch_data[currentProject][data.id]">
             <td><input type="checkbox" ng-value="branchDetails.is_checked"></td>
             <td>{{ branchDetails.parent_branch }}</td>
             <td>{{ branchDetails.child_branch }}</td>
             <td>{{ branchDetails.status }}</td>
+          </tr>
+          <tr ng-if="!applicationData.branch_data[currentProject][data.id].length">
+              <td colspan="4" rowspan="1" class="empty_message">
+                You have zero branches in this state.
+              </td>
           </tr>
         </table>
       </div>

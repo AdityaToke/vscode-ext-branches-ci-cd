@@ -4,6 +4,14 @@
     gap: 15px;
 }
 
+/* Empty message */
+.empty_message {
+    font-size: large;
+    font-weight: 400;
+    text-align: center;
+    padding: 1rem 0;
+}
+
 /* Header start */
 .header_parent_div {
     display: flex;
