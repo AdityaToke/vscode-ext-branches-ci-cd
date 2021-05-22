@@ -8,8 +8,10 @@ export interface IBranchDetails {
 }
 
 export interface IBranchData {
-    [StatusIdentifierEnum.MERGING]: IBranchDetails[],
-    [StatusIdentifierEnum.MERGE_CONFLICTS]: IBranchDetails[],
-    [StatusIdentifierEnum.READY_FOR_MERGE]: IBranchDetails[],
-    [StatusIdentifierEnum.UP_TO_DATE]: IBranchDetails[],
+    [project_name: string]: {
+        [StatusIdentifierEnum.MERGING]: IBranchDetails[],
+        [StatusIdentifierEnum.MERGE_CONFLICTS]: IBranchDetails[],
+        [StatusIdentifierEnum.READY_FOR_MERGE]: IBranchDetails[],
+        [StatusIdentifierEnum.UP_TO_DATE]: IBranchDetails[],
+    }
 }

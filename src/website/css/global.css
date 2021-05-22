@@ -77,3 +77,24 @@ datalist {
 .refresh_icon {
     color: #fff;
 }
+
+input:disabled {
+    background-color: #b2b2b2;
+}
+
+button:disabled,
+button[disabled] {
+    filter: grayscale(1);
+    cursor: context-menu;
+}
+
+.warning {
+    margin: 0;
+    color: #ff5767;
+    font-size: smaller;
+    font-weight: 700;
+}
+
+.text-sm {
+    font-size: smaller;
+}

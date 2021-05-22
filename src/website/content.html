@@ -8,14 +8,12 @@
   <article>
     Last Refreshed On : {{ applicationData.last_refreshed_on }}
   </article>
-  <!-- Workspace dropdown -->
+  <!-- project dropdown -->
   <article class="dropdown_block">
-    <label for="workspaceInput">Select your workspace :</label>
-    <select id="cars" class="dropdown_input workspace_dropdown">
-      <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
-      <option value="mercedes">Mercedes</option>
-      <option value="audi">Audi</option>
+    <label>Select your project :</label>
+    <select class="dropdown_input project_dropdown" ng-change="selectProject(currentProject)" ng-model="currentProject">
+      <option ng-repeat="projectName in project_dropdown_value" ng-value="projectName">{{ projectName }}
+      </option>
     </select>
   </article>
   <!-- Add Section -->
@@ -27,41 +25,54 @@
       <i class="fa fa-times cross_icon" ng-click="showAddModal()"></i>
     </header>
     <div class="add_section_tag_content">
-      <div class="workspace_input_block">
-        <span ng-if="!showWorkspaceDropdown" class="dropdown_block">
-          <label for="workspaceInput">Enter your workspace name:</label>
-          <input list="workspace_list" name="workspaceInput" class="dropdown_input"
-            placeholder="Enter your workspace name" />
+      <div>
+        <span ng-if="!showProjectDropdown" class="dropdown_block">
+          <label for="projectInput">Enter your project name:</label>
+          <input name="projectInput" ng-blur="verifyProject($event)" class="dropdown_input"
+            placeholder="Enter your project name" />
         </span>
-        <span ng-if="showWorkspaceDropdown" class="dropdown_block">
-          <label for="workSpaceExistingSelect">Select your workspace name:</label>
-          <select id="cars" name="workSpaceExistingSelect" class="dropdown_input workspace_dropdown">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="mercedes">Mercedes</option>
-            <option value="audi">Audi</option>
+        <p ng-if="!showProjectDropdown && add_project_details && addFormObject.project_name" class="warning">Project
+          doesn't exists in your current workspace.</p>
+        <span ng-if="showProjectDropdown" class="dropdown_block">
+          <label for="projectExistingSelect">Select your projects:</label>
+          <select name="projectExistingSelect" class="dropdown_input project_dropdown"
+            ng-options='projectName for projectName in existing_project_dropdown_value' ng-change="setProjectName()"
+            ng-model="addFormObject.project_name">
+            <option value="">Select Project</option>
           </select>
         </span>
         <span>
-          <input type="checkbox" ng-click="toggleWorkspaceDropdownInAddModal()">
-          <label>Select from existing workspace.</label>
+          <input type="checkbox" ng-click="toggleProjectDropdownInAddModal()">
+          <label class="text-sm">Select from existing projects (contains only list of projects present in current
+            workspace)</label>
         </span>
       </div>
       <div class="branches_input_block">
 
         <div class="parent_block dropdown_block">
           <label for="parentBranch">Parent Branch:</label>
-          <input name="parentBranch" class="dropdown_input" placeholder="Enter Branch Name" />
+          <input ng-model="addFormObject.parent_branch" name="parentBranch" class="dropdown_input"
+            ng-blur="verifyBranch(addFormObject.parent_branch, 'parent')" ng-disabled="add_project_details"
+            placeholder="Enter Branch Name" />
+          <p ng-if="is_parent_branch_exists" class="warning">
+            Parent branch doesn't exists.
+          </p>
         </div>
         <div class="line"></div>
         <div class="child_block dropdown_block">
           <label for="childBranch">Child Branch:</label>
-          <input name="childBranch" class="dropdown_input" placeholder="Enter Branch Name" />
+          <input ng-model="addFormObject.child_branch" name="childBranch" class="dropdown_input"
+            ng-blur="verifyBranch(addFormObject.child_branch, 'child')" ng-disabled="add_project_details"
+            placeholder="Enter Branch Name" />
+          <p ng-if="is_child_branch_exists" class="warning">
+            Child branch doesn't exists.
+          </p>
         </div>
       </div>
     </div>
     <div class="add_section_tag_footer">
-      <button type="button" class="btn btn-primary" ng-click="showAddModal()">Add</button>
+      <button type="button" class="btn btn-primary" ng-disabled="add_project_details"
+        ng-click="addBranch()">Add</button>
     </div>
   </section>
   <!-- Branch Data and Status Section -->
@@ -80,7 +91,8 @@
             <th>Child Branch</th>
             <th>Status</th>
           </tr>
-          <tr ng-class="data.id+'qwerty'" ng-repeat="branchDetails in applicationData.branch_data[data.id]">
+          <tr ng-class="data.id+'qwerty'"
+            ng-repeat="branchDetails in applicationData.branch_data[currentProject][data.id]">
             <td><input type="checkbox" ng-value="branchDetails.is_checked"></td>
             <td>{{ branchDetails.parent_branch }}</td>
             <td>{{ branchDetails.child_branch }}</td>
