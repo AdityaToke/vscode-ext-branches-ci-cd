@@ -2,15 +2,10 @@
 var app = angular.module('myApp', []);
 
 app.controller('customersCtrl', function ($scope, $http) {
-    resetAddSectionValue = () => {
-        $scope.showAddSection = false;
-        $scope.is_parent_branch_exists = false;
-        $scope.is_child_branch_exists = false;
-        $scope.showProjectDropdown = false;
-        $scope.addFormObject = { project_name: "", parent_branch: "", child_branch: "" };
-        $scope.add_project_details = true;
-    };
-
+    $scope.currentProject = "";
+    $scope.selectProject = function (selectedWorkshop) {
+        console.log(selectedWorkshop, "selectedWorkshop");
+    }
     window.addEventListener('message', event => {
         const { action, data } = event.data;
         switch (action) {
@@ -42,7 +37,10 @@ app.controller('customersCtrl', function ($scope, $http) {
         }
         $scope.$apply();
     });
-    $scope.isMultiSelected = false;
+    $scope.refreshTable = function () {
+        $scope.applicationData.last_refreshed_on = new Date().toString();
+    };
+    // add section logic
     $scope.showAddSection = false;
     $scope.showProjectDropdown = false;
     $scope.addFormObject = { project_name: "", parent_branch: "", child_branch: "" };
@@ -55,9 +53,6 @@ app.controller('customersCtrl', function ($scope, $http) {
         $scope.addFormObject.parent_branch = "";
         $scope.addFormObject.child_branch = "";
     };
-    $scope.refreshTable = function () {
-        $scope.applicationData.last_refreshed_on = new Date().toString();
-    };
     $scope.showAddModal = function () {
         $scope.showAddSection = !$scope.showAddSection;
     }
@@ -67,10 +62,7 @@ app.controller('customersCtrl', function ($scope, $http) {
     $scope.addBranch = function () {
         sendMessageToExtension('add_data', { ...$scope.addFormObject, project_details: $scope.add_project_details });
     }
-    $scope.currentProject = "";
-    $scope.selectProject = function (selectedWorkshop) {
-        console.log(selectedWorkshop, "selectedWorkshop");
-    }
+
     $scope.verifyBranch = function (branchName, from) {
         sendMessageToExtension('verify_branch', { verifyFor: from, branch_name: branchName, project_details: $scope.add_project_details, project_name: $scope.addFormObject.project_name });
     }
@@ -83,6 +75,14 @@ app.controller('customersCtrl', function ($scope, $http) {
     $scope.setProjectName = function () {
         $scope.add_project_details = $scope.addFormObject.project_name ? false : true;
     }
+    resetAddSectionValue = () => {
+        $scope.showAddSection = false;
+        $scope.is_parent_branch_exists = false;
+        $scope.is_child_branch_exists = false;
+        $scope.showProjectDropdown = false;
+        $scope.addFormObject = { project_name: "", parent_branch: "", child_branch: "" };
+        $scope.add_project_details = true;
+    };
 });
 
 function sendMessageToExtension(action, data) {
