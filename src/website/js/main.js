@@ -3,14 +3,13 @@ var app = angular.module('myApp', []);
 
 app.controller('customersCtrl', function ($scope, $http) {
     $scope.currentProject = "";
-    $scope.selectProject = function (selectedWorkshop) {
-        console.log(selectedWorkshop, "selectedWorkshop");
-    }
+    $scope.globalApplicationData;
     window.addEventListener('message', event => {
         const { action, data } = event.data;
         switch (action) {
             case "application_data":
-                $scope.applicationData = data;
+                $scope.applicationData = JSON.parse(JSON.stringify(data));
+                $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
                 $scope.project_dropdown_value = Array.from(new Set([...Object.keys(data.branch_data), ...data.current_projects]));
                 $scope.currentProject = Object.keys(data.branch_data)[0];
 
@@ -39,6 +38,28 @@ app.controller('customersCtrl', function ($scope, $http) {
     $scope.refreshTable = function () {
         $scope.applicationData.last_refreshed_on = new Date().toString();
     };
+    //search
+    $scope.searchText = "";
+    $scope.search = function () {
+        // if application data is not present then we dont search
+        if ($scope.globalApplicationData.branch_data[$scope.currentProject] && $scope.searchText) {
+            let tempApplicationData = {};
+            $scope.globalApplicationData.status_details.forEach(res => {
+                tempApplicationData[res.id] = [];
+                // if the state has no data then we dont search
+                if ($scope.globalApplicationData.branch_data[$scope.currentProject][res.id].length) {
+                    $scope.globalApplicationData.branch_data[$scope.currentProject][res.id].forEach(branchDetails => {
+                        if(branchDetails.parent_branch.includes($scope.searchText) || branchDetails.child_branch.includes($scope.searchText)) {
+                            tempApplicationData[res.id].push(branchDetails);
+                        }
+                    });
+                }
+            });
+            $scope.applicationData.branch_data[$scope.currentProject] = tempApplicationData;
+        } else {
+            $scope.applicationData.branch_data[$scope.currentProject] =  $scope.globalApplicationData.branch_data[$scope.currentProject];
+        }
+    }
     // add section logic
     $scope.showAddSection = false;
     $scope.showProjectDropdown = false;

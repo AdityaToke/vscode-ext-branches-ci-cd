@@ -182,7 +182,7 @@ function sendMessage(action: string, data: any): void {
 function getWebviewContent(): string {
 
 	const htmlBodyData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'content.html')).fsPath, 'utf8');
-	const jsFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'main.js')).fsPath, 'utf8');
+	const mainJSFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'js', 'main.js')).fsPath, 'utf8');
 	const globalStyleFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'css', 'global.css')).fsPath, 'utf8');
 	const styleFileData = fs.readFileSync(vscode.Uri.file(path.join(globalContext.extensionPath, 'src', 'website', 'css', 'style.css')).fsPath, 'utf8');
 
@@ -202,7 +202,7 @@ function getWebviewContent(): string {
     ${htmlBodyData}
 <script>
 const vscode = acquireVsCodeApi();
-	${jsFileData}
+	${mainJSFileData}
 </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <div ng-app="myApp" ng-controller="customersCtrl" class="main_div">
 
   <div class="header_parent_div">
-    <input type="text" placeholder="Search" class="search_input_tag">
+    <input type="text" placeholder="Search" class="search_input_tag" ng-model="searchText" ng-change="search()">
     <button type="button" ng-if="!showAddSection" class="btn btn-primary" ng-click="showAddModal()">Add</button>
     <i title="Refresh" class="refresh_icon fa fa-refresh" ng-click="refreshTable()"></i>
   </div>
