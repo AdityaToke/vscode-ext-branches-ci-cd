@@ -94,7 +94,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
 		if (!projectDetailsTemp) {
 			projectDetailsTemp = searchProject(verifyBranchObj.project_name);
 		}
-		const cmd = 'cd ' + projectDetailsTemp?.uri.fsPath + ` && git rev-parse --verify ${verifyBranchObj.branch_name}`;
+		const cmd = 'cd ' + projectDetailsTemp?.uri.fsPath + ` && git rev-parse --verify origin/${verifyBranchObj.branch_name}`;
 		const { stdout, stderr } = await exec(cmd);
 		if (stderr) {
 			sendMessage(SendActionEnum.VERIFY_BRANCH, { verifiedFor: verifyBranchObj.verifyFor, value: true });
@@ -116,7 +116,7 @@ async function addDataToStorage(dataToAdd: any) {
 		if (!projectDetailsTemp) {
 			projectDetailsTemp = searchProject(dataToAdd.project_name);
 		}
-		const cmd = 'cd ' + projectDetailsTemp?.uri.fsPath + ` && git rev-list --right-only --count ${dataToAdd.child_branch}...${dataToAdd.parent_branch}`;
+		const cmd = 'cd ' + projectDetailsTemp?.uri.fsPath + ` && git rev-list --right-only --count origin/${dataToAdd.child_branch}...origin/${dataToAdd.parent_branch}`;
 		const { stdout, stderr } = await exec(cmd);
 		if (stderr) {
 			console.error(`error: ${stderr}`);
@@ -163,7 +163,7 @@ async function addDataToStorage(dataToAdd: any) {
 				tempApplicationData.branch_data[dataToAdd.project_name] = tempBranchData;
 			}
 			updateApplicationData(tempApplicationData);
-			sendMessage(SendActionEnum.APPLICATION_DATA, tempApplicationData);
+			sendMessage(SendActionEnum.APPLICATION_DATA, { ...tempApplicationData, current_projects: vscode.workspace?.workspaceFolders?.map(x => x.name) });
 		}
 	} catch (error) {
 		console.error("___error___", error)

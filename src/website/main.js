@@ -2,9 +2,15 @@
 var app = angular.module('myApp', []);
 
 app.controller('customersCtrl', function ($scope, $http) {
-    $scope.add_project_details = true;
-    $scope.is_parent_branch_exists = false;
-    $scope.is_child_branch_exists = false;
+    resetAddSectionValue = () => {
+        $scope.showAddSection = false;
+        $scope.is_parent_branch_exists = false;
+        $scope.is_child_branch_exists = false;
+        $scope.showProjectDropdown = false;
+        $scope.addFormObject = { project_name: "", parent_branch: "", child_branch: "" };
+        $scope.add_project_details = true;
+    };
+
     window.addEventListener('message', event => {
         const { action, data } = event.data;
         switch (action) {
@@ -13,6 +19,9 @@ app.controller('customersCtrl', function ($scope, $http) {
                 $scope.project_dropdown_value = Object.keys(data.branch_data);
                 $scope.currentProject = Object.keys(data.branch_data)[0];
                 $scope.existing_project_dropdown_value = data.current_projects;
+
+                // add
+                resetAddSectionValue();
                 break;
 
             case "verify_project":
@@ -51,6 +60,9 @@ app.controller('customersCtrl', function ($scope, $http) {
     };
     $scope.showAddModal = function () {
         $scope.showAddSection = !$scope.showAddSection;
+    }
+    $scope.closeAddSection = function () {
+        resetAddSectionValue();
     }
     $scope.addBranch = function () {
         sendMessageToExtension('add_data', { ...$scope.addFormObject, project_details: $scope.add_project_details });
