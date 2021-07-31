@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 			? vscode.window.activeTextEditor.viewColumn
 			: undefined;
 
-		if (currentPanel) {
+		if (currentPanel && columnToShowIn) {
 			currentPanel.reveal(columnToShowIn);
 		} else {
 			vscode.window.showInformationMessage('Hello World from Git Branches CI/CD!');
