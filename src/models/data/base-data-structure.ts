@@ -33,38 +33,10 @@ export function baseDataStructure(projectName: string) : IBaseDataStructure {
         ],
         branch_data: {
             [projectName]: {
-                [StatusIdentifierEnum.MERGING]: [
-                    {
-                        is_checked: false,
-                        parent_branch: "develop",
-                        child_branch: "feature/trailing-slash",
-                        status: "Merging"
-                    }
-                ],
-                [StatusIdentifierEnum.MERGE_CONFLICTS]: [
-                    {
-                        is_checked: false,
-                        parent_branch: "develop",
-                        child_branch: "feature/trailing-slash-v3",
-                        status: "Their are total 23 merge conflicts, please manually merge the branch and resolve the conflicts."
-                    }
-                ],
-                [StatusIdentifierEnum.READY_FOR_MERGE]: [
-                    {
-                        is_checked: false,
-                        parent_branch: "develop",
-                        child_branch: "feature/trailing-slash-v2",
-                        status: "The branch is ready to merge in parent branch."
-                    }
-                ],
-                [StatusIdentifierEnum.UP_TO_DATE]: [
-                    {
-                        is_checked: false,
-                        parent_branch: "develop",
-                        child_branch: "feature/trailing-slash",
-                        status: "Your branch is up to date."
-                    }
-                ]
+                [StatusIdentifierEnum.MERGING]: [],
+                [StatusIdentifierEnum.MERGE_CONFLICTS]: [],
+                [StatusIdentifierEnum.READY_FOR_MERGE]: [],
+                [StatusIdentifierEnum.UP_TO_DATE]: [],
             }
         }
     }
