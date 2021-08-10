@@ -10,9 +10,12 @@ app.controller('customersCtrl', function ($scope, $http) {
             case "application_data":
                 $scope.applicationData = JSON.parse(JSON.stringify(data));
                 $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
-                $scope.project_dropdown_value = Array.from(new Set([...Object.keys(data.branch_data), ...data.current_projects]));
-                $scope.currentProject = Object.keys(data.branch_data)[0];
-
+                $scope.project_dropdown_value = Array.from(new Set([...Object.keys(data.branch_data), ...data.current_projects])).filter(Boolean);
+                if ($scope.project_dropdown_value.length === 1) {
+                    $scope.currentProject = $scope.project_dropdown_value[0];
+                } else {
+                    $scope.currentProject = Object.keys(data.branch_data)[0];
+                }
                 // add
                 resetAddSectionValue();
                 break;
@@ -23,7 +26,6 @@ app.controller('customersCtrl', function ($scope, $http) {
                 break;
 
             case "verify_branch":
-                console.log(data, "verify data");
                 if (data.verifiedFor === "parent") {
                     $scope.is_parent_branch_exists = data.value;
                 } else {
@@ -68,8 +70,8 @@ app.controller('customersCtrl', function ($scope, $http) {
         $scope.showProjectDropdown = !$scope.showProjectDropdown;
         $scope.addFormObject.project_name = "";
         $scope.add_project_details = true;
-        $scope.is_parent_branch_exists = false;
-        $scope.is_child_branch_exists = false;
+        $scope.is_parent_branch_exists = null;
+        $scope.is_child_branch_exists = null;
         $scope.addFormObject.parent_branch = "";
         $scope.addFormObject.child_branch = "";
     };
@@ -97,8 +99,8 @@ app.controller('customersCtrl', function ($scope, $http) {
     }
     resetAddSectionValue = () => {
         $scope.showAddSection = false;
-        $scope.is_parent_branch_exists = false;
-        $scope.is_child_branch_exists = false;
+        $scope.is_parent_branch_exists = null;
+        $scope.is_child_branch_exists = null;
         $scope.showProjectDropdown = false;
         $scope.addFormObject = { project_name: "", parent_branch: "", child_branch: "" };
         $scope.add_project_details = true;

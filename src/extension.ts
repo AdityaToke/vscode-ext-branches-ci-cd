@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
           currentPanel.reveal(columnToShowIn);
         } else {
           vscode.window.showInformationMessage(
-            "Hello World from Git Branches CI/CD!"
+            "Starting Git Branches CI/CD"
           );
           currentPanel = vscode.window.createWebviewPanel(
             "parentWebViewScreen",

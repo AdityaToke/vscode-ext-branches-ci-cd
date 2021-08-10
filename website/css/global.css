@@ -95,6 +95,13 @@ button[disabled] {
     font-weight: 700;
 }
 
+.success {
+    color: #00ff80;
+    font-size: smaller;
+    font-weight: 700;
+    margin: 0;
+}
+
 .text-sm {
     font-size: smaller;
 }

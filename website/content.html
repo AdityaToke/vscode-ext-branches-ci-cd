@@ -52,20 +52,28 @@
         <div class="parent_block dropdown_block">
           <label for="parentBranch">Parent Branch:</label>
           <input ng-model="addFormObject.parent_branch" name="parentBranch" class="dropdown_input"
-            ng-blur="verifyBranch(addFormObject.parent_branch, 'parent')" ng-disabled="add_project_details"
+            ng-change="verifyBranch(addFormObject.parent_branch, 'parent')" ng-disabled="add_project_details"
+            ng-model-options="{ debounce: 500 }"
             placeholder="Enter Branch Name" />
-          <p ng-if="is_parent_branch_exists" class="warning">
+          <p ng-if="is_parent_branch_exists === true" class="warning">
             Parent branch doesn't exists.
+          </p>
+          <p ng-if="is_parent_branch_exists === false" class="success">
+            Parent branch exists.
           </p>
         </div>
         <div class="line"></div>
         <div class="child_block dropdown_block">
           <label for="childBranch">Child Branch:</label>
           <input ng-model="addFormObject.child_branch" name="childBranch" class="dropdown_input"
-            ng-blur="verifyBranch(addFormObject.child_branch, 'child')" ng-disabled="add_project_details"
+            ng-change="verifyBranch(addFormObject.child_branch, 'child')" ng-disabled="add_project_details"
+            ng-model-options="{ debounce: 500 }"
             placeholder="Enter Branch Name" />
-          <p ng-if="is_child_branch_exists" class="warning">
+          <p ng-if="is_child_branch_exists === true" class="warning">
             Child branch doesn't exists.
+          </p>
+          <p ng-if="is_child_branch_exists === false" class="success">
+            Child branch exists.
           </p>
         </div>
       </div>

@@ -3,7 +3,7 @@
 	"displayName": "Git: Branch CI/CD",
 	"publisher": "AdityaToke",
 	"description": "",
-	"version": "0.0.2",
+	"version": "0.0.22",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
