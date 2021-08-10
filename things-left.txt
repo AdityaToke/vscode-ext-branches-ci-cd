@@ -2,6 +2,11 @@
 
 2. hiding of the action button delete merge etc etc
 3. checkbox implementation
+4. implementation of the merge, merging state
+5. check its handling in the multiple workspace
+6. also check the logs stuff if we can maintain to help user to know more
+7. issue found Add button was enable even we dnt add parent and child branch (Fixed)
+8. there should be no same branch in parent and child branch  (Fixed)
 
 ********** ADVANCED TEST CASE **********
 
