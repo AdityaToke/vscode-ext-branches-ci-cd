@@ -190,6 +190,7 @@ async function addDataToStorage(dataToAdd: any) {
           parent_branch: dataToAdd.parent_branch,
           child_branch: dataToAdd.child_branch,
           status: currentStatus.status,
+          id: new Date().getTime(),
         });
       } else {
         const tempBranchData = {

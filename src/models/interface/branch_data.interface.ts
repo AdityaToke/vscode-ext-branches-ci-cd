@@ -1,6 +1,7 @@
 import { StatusIdentifierEnum } from "../enum/status.enum";
 
 export interface IBranchDetails {
+    id: number;
     parent_branch: string;
     child_branch: string;
     status: string;

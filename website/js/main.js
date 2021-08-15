@@ -85,6 +85,8 @@ app.controller("customersCtrl", function ($scope, $http) {
     project_name: "",
     parent_branch: "",
     child_branch: "",
+    id: new Date().getTime(),
+    is_is_checked: false,
   };
   $scope.showAddModal = function () {
     $scope.showAddSection = !$scope.showAddSection;
@@ -118,6 +120,35 @@ app.controller("customersCtrl", function ($scope, $http) {
       : true;
     setAddDetailsButton();
   };
+  $scope.selectedBranchDetails = {
+    "merging": [],
+    "ready_to_merge": [],
+    "merge_conflicts": [],
+    "up_to_date": [],
+  };
+  $scope.hasAllCheckboxClicked = false;
+  $scope.checkboxHasBeenCalled = function (sectionName, selectedBranchDetails) {
+    if (selectedBranchDetails.is_checked) {
+      $scope.selectedBranchDetails[sectionName].push(selectedBranchDetails);
+      if ($scope.selectedBranchDetails[sectionName].length === 
+        $scope.applicationData.branch_data[$scope.currentProject][sectionName].length) {
+      $scope.hasAllCheckboxClicked = true;
+        }
+    } else {
+      $scope.selectedBranchDetails[sectionName] = $scope.selectedBranchDetails[sectionName].filter(x => x.id !== selectedBranchDetails.id );
+      $scope.hasAllCheckboxClicked = false;
+    }
+  };
+  $scope.checkAllBoxes = function(sectionName, selectedSection, currentValue) {
+    if (currentValue) {
+      $scope.selectedBranchDetails[sectionName] = selectedSection;
+    } else {
+      $scope.selectedBranchDetails[sectionName] = [];
+    }
+    selectedSection.forEach(res => {
+      res.is_checked = currentValue;
+    });
+  };
   resetAddSectionValue = () => {
     $scope.showAddSection = false;
     $scope.is_parent_branch_exists = null;
@@ -126,6 +157,8 @@ app.controller("customersCtrl", function ($scope, $http) {
       project_name: "",
       parent_branch: "",
       child_branch: "",
+      id: new Date().getTime(),
+      is_is_checked: false,
     };
     $scope.add_project_details_inputs = true;
     $scope.add_project_details_button = true;

@@ -1,7 +1,19 @@
 *********** UI ************
 
-2. hiding of the action button delete merge etc etc
-3. checkbox implementation
+2. hiding of the action button delete merge etc etc (Fixed)
+3. checkbox implementation (Fixed)
+
+9. when we have zero commits at that time we need to move it to Up to date not in ready to merge
+currently its moving to ready for merge.
+10. 
+check this MR - https://gitlab.ischoolconnect.com/white-labelled-solutions/agents-dashboard/-/merge_requests/515
+we are 44 commit behind but its giving 43 commit 
+it may be because of local branch is not up to date.
+try to compare it with origin.
+11. 
+on all child unchecked why does parent checkbox is still active
+added condition but its not reflecting weired by check it not on priority.
+
 4. implementation of the merge, merging state
 5. check its handling in the multiple workspace
 6. also check the logs stuff if we can maintain to help user to know more

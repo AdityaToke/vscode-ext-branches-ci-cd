@@ -11,24 +11,28 @@ export function baseDataStructure(projectName: string) : IBaseDataStructure {
                 name: StatusNameEnum.MERGING,
                 is_deletable: false,
                 is_mergable: false,
+                currently_is_checked: false,
             },
             {
                 id: StatusIdentifierEnum.MERGE_CONFLICTS,
                 name: StatusNameEnum.MERGE_CONFLICTS,
                 is_deletable: true,
                 is_mergable: false,
+                currently_is_checked: false,
             },
             {
                 id: StatusIdentifierEnum.READY_FOR_MERGE,
                 name: StatusNameEnum.READY_FOR_MERGE,
                 is_deletable: true,
                 is_mergable: true,
+                currently_is_checked: false,
             },
             {
                 id: StatusIdentifierEnum.UP_TO_DATE,
                 name: StatusNameEnum.UP_TO_DATE,
                 is_deletable: true,
                 is_mergable: false,
+                currently_is_checked: false,
             }
         ],
         branch_data: {
