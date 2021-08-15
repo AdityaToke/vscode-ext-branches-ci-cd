@@ -166,7 +166,7 @@ async function addDataToStorage(dataToAdd: any) {
       numberOfCommits = stdout;
     }
 
-    if (numberOfCommits) {
+    if (+numberOfCommits) {
       currentStatus = {
         id: StatusIdentifierEnum.READY_FOR_MERGE,
         status: `The source branch is ${numberOfCommits} commits behind the target branch`,
