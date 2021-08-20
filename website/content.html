@@ -130,6 +130,7 @@
           type="button"
           ng-if="data.is_deletable && selectedBranchDetails[data.id].length > 0"
           class="action_button btn btn-danger"
+          ng-click="deleteBranch(data.id)"
         >
           Delete
         </button>
@@ -150,8 +151,8 @@
                 name="selectAllCheckBox"
                 ng-id="data.id"
                 ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0"
-                ng-click="checkAllBoxes(data.id, applicationData.branch_data[currentProject][data.id], hasAllCheckboxClicked)"
-                ng-model="hasAllCheckboxClicked"
+                ng-click="checkAllBoxes(data.id, applicationData.branch_data[currentProject][data.id], hasAllCheckboxClicked[data.id])"
+                ng-model="hasAllCheckboxClicked[data.id]"
               />
             </th>
             <th>Parent Branch</th>

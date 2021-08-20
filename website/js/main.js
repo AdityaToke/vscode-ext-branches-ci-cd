@@ -6,6 +6,7 @@ app.controller("customersCtrl", function ($scope, $http) {
   $scope.add_project_details_button = true;
   window.addEventListener("message", (event) => {
     const { action, data } = event.data;
+
     switch (action) {
       case "application_data":
         $scope.applicationData = JSON.parse(JSON.stringify(data));
@@ -120,23 +121,29 @@ app.controller("customersCtrl", function ($scope, $http) {
       : true;
     setAddDetailsButton();
   };
+  /* Checkbox */
   $scope.selectedBranchDetails = {
     "merging": [],
     "ready_to_merge": [],
     "merge_conflicts": [],
     "up_to_date": [],
   };
-  $scope.hasAllCheckboxClicked = false;
+  $scope.hasAllCheckboxClicked = {
+    "merging": false,
+    "ready_to_merge": false,
+    "merge_conflicts": false,
+    "up_to_date": false,
+  };
   $scope.checkboxHasBeenCalled = function (sectionName, selectedBranchDetails) {
     if (selectedBranchDetails.is_checked) {
       $scope.selectedBranchDetails[sectionName].push(selectedBranchDetails);
       if ($scope.selectedBranchDetails[sectionName].length === 
         $scope.applicationData.branch_data[$scope.currentProject][sectionName].length) {
-      $scope.hasAllCheckboxClicked = true;
+      $scope.hasAllCheckboxClicked[sectionName] = true;
         }
     } else {
       $scope.selectedBranchDetails[sectionName] = $scope.selectedBranchDetails[sectionName].filter(x => x.id !== selectedBranchDetails.id );
-      $scope.hasAllCheckboxClicked = false;
+      $scope.hasAllCheckboxClicked[sectionName] = false;
     }
   };
   $scope.checkAllBoxes = function(sectionName, selectedSection, currentValue) {
@@ -148,6 +155,16 @@ app.controller("customersCtrl", function ($scope, $http) {
     selectedSection.forEach(res => {
       res.is_checked = currentValue;
     });
+  };
+  /* Delete */
+  $scope.deleteBranch = function (sectionName) {
+    sendMessageToExtension("delete", {
+      items: [ ...$scope.selectedBranchDetails[sectionName]],
+      sectionName,
+      currentProject: $scope.currentProject
+    });
+    $scope.selectedBranchDetails[sectionName] = [];
+    $scope.hasAllCheckboxClicked[sectionName] = false;
   };
   resetAddSectionValue = () => {
     $scope.showAddSection = false;

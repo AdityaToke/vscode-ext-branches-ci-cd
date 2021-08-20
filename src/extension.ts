@@ -91,6 +91,10 @@ function receiveMessage() {
           verifyProject(data);
           return;
 
+          case ReceiveAction.DELETE_DATA:
+            deleteData(data);
+            return;
+
         default:
           break;
       }
@@ -219,6 +223,20 @@ async function addDataToStorage(dataToAdd: any) {
   } catch (error) {
     console.error("___error___", error);
   }
+}
+
+function deleteData(recordToBeDeleted: any): void {
+  let tempApplicationData: IBaseDataStructure | any =
+  globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+    recordToBeDeleted.items.forEach((element: any) => {
+      tempApplicationData.branch_data[recordToBeDeleted.currentProject][recordToBeDeleted.sectionName] = 
+tempApplicationData.branch_data[recordToBeDeleted.currentProject][recordToBeDeleted.sectionName].filter((x: { id: string; }) => x.id !== element.id);
+    });
+    updateApplicationData(tempApplicationData);
+      sendMessage(SendActionEnum.APPLICATION_DATA, {
+        ...tempApplicationData,
+        current_projects: [recordToBeDeleted.currentProject]
+      });
 }
 
 function updateApplicationData(data: any): void {
