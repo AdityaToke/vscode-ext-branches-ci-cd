@@ -65,8 +65,8 @@ app.controller("customersCtrl", function ($scope, $http) {
             res.id
           ].forEach((branchDetails) => {
             if (
-              branchDetails.parent_branch.includes($scope.searchText) ||
-              branchDetails.child_branch.includes($scope.searchText)
+              branchDetails.parent_branch.toLowerCase().includes($scope.searchText.toLowerCase()) ||
+              branchDetails.child_branch.toLowerCase().includes($scope.searchText.toLowerCase())
             ) {
               tempApplicationData[res.id].push(branchDetails);
             }
@@ -161,6 +161,26 @@ app.controller("customersCtrl", function ($scope, $http) {
     sendMessageToExtension("delete", {
       items: [ ...$scope.selectedBranchDetails[sectionName]],
       sectionName,
+      currentProject: $scope.currentProject
+    });
+    $scope.selectedBranchDetails[sectionName] = [];
+    $scope.hasAllCheckboxClicked[sectionName] = false;
+  };
+  /* Merge */
+  $scope.mergeBranch = function (sectionName) {
+    // move from 'ready to merge' to 'merging'
+    $scope.applicationData.branch_data[$scope.currentProject]['merging'] = [ ...$scope.selectedBranchDetails[sectionName]];
+    const deselected = [];
+    $scope.applicationData.branch_data[$scope.currentProject][sectionName].forEach(res => {
+      if (!$scope.selectedBranchDetails[sectionName].find(x => x.id === res.id)) {
+          res.is_checked = true;
+          deselected.push(res);
+      }
+    });
+    $scope.applicationData.branch_data[$scope.currentProject][sectionName] = deselected;
+    // then we will call the above lines
+    sendMessageToExtension("merge", {
+      items: [ ...$scope.selectedBranchDetails[sectionName]],
       currentProject: $scope.currentProject
     });
     $scope.selectedBranchDetails[sectionName] = [];

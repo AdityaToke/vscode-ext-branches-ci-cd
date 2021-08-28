@@ -1,16 +1,21 @@
 *********** UI ************
 
+8. implementation of the merge conlficts actions as per hamza comment.
 
+6. also check the logs stuff if we can maintain to help user to know more
 
+7. auto refesh, refresh and checking of branch on when the app is open for that particular project.
+5. check its handling in the multiple workspace
+
+_________________________NOT ABLE TO REPRODUCE AGAIN_____________________________
 
 10. 
 check this MR - https://gitlab.ischoolconnect.com/white-labelled-solutions/agents-dashboard/-/merge_requests/515
 we are 44 commit behind but its giving 43 commit 
 it may be because of local branch is not up to date try to compare it with origin.
-4. implementation of the merge, merging state
-5. check its handling in the multiple workspace
-6. also check the logs stuff if we can maintain to help user to know more
 
+_______________________FIXED___________________________________________________________
+4. implementation of the merge, merging state (Fixed)
 7. issue found Add button was enable even we dnt add parent and child branch (Fixed)
 8. there should be no same branch in parent and child branch  (Fixed)
 2. hiding of the action button delete merge etc etc (Fixed)

@@ -138,6 +138,7 @@
           type="button"
           ng-if="data.is_mergable && selectedBranchDetails[data.id].length > 0"
           class="action_button btn btn-warning"
+          ng-click="mergeBranch(data.id)"
         >
           Merge
         </button>
@@ -150,7 +151,7 @@
                 type="checkbox"
                 name="selectAllCheckBox"
                 ng-id="data.id"
-                ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0"
+                ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0 || data.id === 'merging' "
                 ng-click="checkAllBoxes(data.id, applicationData.branch_data[currentProject][data.id], hasAllCheckboxClicked[data.id])"
                 ng-model="hasAllCheckboxClicked[data.id]"
               />
@@ -166,6 +167,7 @@
             <td>
                 <input type="checkbox" 
                 ng-model="branchDetails.is_checked" 
+                ng-disabled="data.id === 'merging'"
                 ng-click="checkboxHasBeenCalled(data.id, branchDetails)"
                 />
             </td>

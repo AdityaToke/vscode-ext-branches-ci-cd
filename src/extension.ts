@@ -8,6 +8,7 @@ import { SendActionEnum } from "./models/enum/send-action.enum";
 import { StatusIdentifierEnum } from "./models/enum/status.enum";
 import { IBaseDataStructure } from "./models/interface/base_data_structure.interface";
 import { IVerifyBranch } from "./models/interface/verify_branch.interface";
+import { IBranchDetails } from "./models/interface/branch_data.interface";
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 let globalContext: vscode.ExtensionContext;
 const util = require("util");
@@ -25,9 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (currentPanel && columnToShowIn) {
           currentPanel.reveal(columnToShowIn);
         } else {
-          vscode.window.showInformationMessage(
-            "Starting Git Branches CI/CD"
-          );
+          vscode.window.showInformationMessage("Starting Git Branches CI/CD");
           currentPanel = vscode.window.createWebviewPanel(
             "parentWebViewScreen",
             "Git: Branch CI/CD",
@@ -91,9 +90,13 @@ function receiveMessage() {
           verifyProject(data);
           return;
 
-          case ReceiveAction.DELETE_DATA:
-            deleteData(data);
-            return;
+        case ReceiveAction.DELETE_DATA:
+          deleteData(data);
+          return;
+
+        case ReceiveAction.MERGE:
+          mergeData(data);
+          return;
 
         default:
           break;
@@ -104,6 +107,90 @@ function receiveMessage() {
   );
 }
 
+async function mergeData(data: any) {
+  let projectDetailsTemp = searchProject(data.currentProject);
+  const tempApplicationData: IBaseDataStructure | undefined =
+    globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+  let element: IBranchDetails;
+  for (let index = 0; index < data.items.length; index++) {
+    element = data.items[index];
+    if (tempApplicationData) {
+      tempApplicationData.branch_data[data.currentProject].ready_to_merge =
+        tempApplicationData.branch_data[
+          data.currentProject
+        ].ready_to_merge.filter((x) => x.id !== element.id);
+    }
+    try {
+      const cmd =
+        "cd " +
+        projectDetailsTemp?.uri.fsPath +
+        ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
+
+      const { stdout, stderr } = await exec(cmd);
+      console.log(stderr, stdout, "asda");
+      if (stdout) {
+        element.is_checked = false;
+        tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
+          element
+        );
+      }
+    } catch (error) {
+      console.clear();
+      if (error.stdout.toLowerCase().includes("automatic merge failed")) {
+        // before abort we will extract all the info using diff
+        // abort the git merge
+        const cmd =
+          "cd " +
+          projectDetailsTemp?.uri.fsPath +
+          " && git diff --name-only --diff-filter=U && git merge --abort";
+        const { stdout, stderr } = await exec(cmd);
+        element.status = "Conflicted Files - ";
+        const conflictsFilesList = stdout.split("\n").filter(Boolean);
+        conflictsFilesList.forEach((fileName: string, index: number) => {
+          if (fileName.includes("/")) {
+            const splitedText = fileName.split("/");
+            if (index !== 0) {
+              element.status += ", ";
+            }
+            element.status += splitedText[splitedText.length - 1];
+          } else {
+            element.status += fileName;
+          }
+        });
+        // add it in merge conflicts
+        element.is_checked = false;
+        tempApplicationData?.branch_data[
+          data.currentProject
+        ].merge_conflicts.push(element);
+      }
+      if (
+        error.stdout
+          .toLowerCase()
+          .includes('use "git push" to publish your local commits')
+      ) {
+        // again add the git push command
+        // and after that we will add it to up to date.
+        try {
+          const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
+          await exec(cmd);
+        } catch (error) {
+          console.log(error, "error");
+        }
+        // add it in up to date
+        element.is_checked = false;
+        element.status = "The branch is up to date.";
+        tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
+          element
+        );
+      }
+    }
+  }
+  updateApplicationData(tempApplicationData);
+  sendMessage(SendActionEnum.APPLICATION_DATA, {
+    ...tempApplicationData,
+    current_projects: vscode.workspace?.workspaceFolders?.map((x) => x.name),
+  });
+}
 function verifyProject(projectName: string) {
   sendMessage(SendActionEnum.VERIFY_PROJECT, {
     branch_name: projectName,
@@ -227,16 +314,19 @@ async function addDataToStorage(dataToAdd: any) {
 
 function deleteData(recordToBeDeleted: any): void {
   let tempApplicationData: IBaseDataStructure | any =
-  globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-    recordToBeDeleted.items.forEach((element: any) => {
-      tempApplicationData.branch_data[recordToBeDeleted.currentProject][recordToBeDeleted.sectionName] = 
-tempApplicationData.branch_data[recordToBeDeleted.currentProject][recordToBeDeleted.sectionName].filter((x: { id: string; }) => x.id !== element.id);
-    });
-    updateApplicationData(tempApplicationData);
-      sendMessage(SendActionEnum.APPLICATION_DATA, {
-        ...tempApplicationData,
-        current_projects: [recordToBeDeleted.currentProject]
-      });
+    globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+  recordToBeDeleted.items.forEach((element: any) => {
+    tempApplicationData.branch_data[recordToBeDeleted.currentProject][
+      recordToBeDeleted.sectionName
+    ] = tempApplicationData.branch_data[recordToBeDeleted.currentProject][
+      recordToBeDeleted.sectionName
+    ].filter((x: { id: string }) => x.id !== element.id);
+  });
+  updateApplicationData(tempApplicationData);
+  sendMessage(SendActionEnum.APPLICATION_DATA, {
+    ...tempApplicationData,
+    current_projects: [recordToBeDeleted.currentProject],
+  });
 }
 
 function updateApplicationData(data: any): void {
