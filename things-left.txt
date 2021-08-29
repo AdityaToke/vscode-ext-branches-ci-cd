@@ -1,10 +1,16 @@
 *********** UI ************
 
+7. auto refesh, refresh and checking of branch on when the app is open for that particular project.
+11. while adding branch we also check Merge conflicts as we have the logic now.
+13. we should show message while refreshing
+
+14. if there are changes then we provide message that please stash your changes
+and then perform the action.
+
 8. implementation of the merge conlficts actions as per hamza comment.
 
 6. also check the logs stuff if we can maintain to help user to know more
 
-7. auto refesh, refresh and checking of branch on when the app is open for that particular project.
 5. check its handling in the multiple workspace
 
 _________________________NOT ABLE TO REPRODUCE AGAIN_____________________________

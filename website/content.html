@@ -12,6 +12,7 @@
       ng-if="!showAddSection"
       class="btn btn-primary"
       ng-click="showAddModal()"
+      ng-disabled="disableAllAction"
     >
       Add
     </button>
@@ -22,6 +23,15 @@
     ></i>
   </div>
   <article>Last Refreshed On : {{ applicationData.last_refreshed_on }}</article>
+  <!-- Show any message required -->
+  <article ng-if="disableAllAction" class="message_section_tag">
+    <header><i class="fa fa-exclamation-circle"></i>Info Message</header>
+    <section ng-if="disableAllAction">
+      Git Branch CI/CD is refreshing all your branches.
+      <br />
+      Dont panic if your branch name in bottom right keeps on changing.
+    </section>
+  </article>
   <!-- project dropdown -->
   <article class="dropdown_block">
     <label>Select your project :</label>
@@ -114,7 +124,7 @@
       <button
         type="button"
         class="btn btn-primary"
-        ng-disabled="add_project_details_button"
+        ng-disabled="add_project_details_button || disableAllAction"
         ng-click="addBranch()"
       >
         Add
@@ -131,6 +141,7 @@
           ng-if="data.is_deletable && selectedBranchDetails[data.id].length > 0"
           class="action_button btn btn-danger"
           ng-click="deleteBranch(data.id)"
+          ng-disabled="disableAllAction"
         >
           Delete
         </button>
@@ -139,6 +150,7 @@
           ng-if="data.is_mergable && selectedBranchDetails[data.id].length > 0"
           class="action_button btn btn-warning"
           ng-click="mergeBranch(data.id)"
+          ng-disabled="disableAllAction"
         >
           Merge
         </button>
@@ -165,11 +177,12 @@
             ng-repeat="branchDetails in applicationData.branch_data[currentProject][data.id]"
           >
             <td>
-                <input type="checkbox" 
-                ng-model="branchDetails.is_checked" 
+              <input
+                type="checkbox"
+                ng-model="branchDetails.is_checked"
                 ng-disabled="data.id === 'merging'"
                 ng-click="checkboxHasBeenCalled(data.id, branchDetails)"
-                />
+              />
             </td>
             <td>{{ branchDetails.parent_branch }}</td>
             <td>{{ branchDetails.child_branch }}</td>

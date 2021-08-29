@@ -49,8 +49,27 @@
   flex: 1 1 50%;
 }
 
+/* Message Section */
+
+.message_section_tag header {
+  display: flex;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 2rem;
+  border-bottom: 2px solid antiquewhite;
+  margin-bottom: 0.5rem;
+}
+
+.message_section_tag section {
+  font-size: 15px;
+  font-weight: 200;
+  line-height: 1.25rem;
+}
 /* Add dialog part */
 
+.message_section_tag,
 .add_section_tag {
   border: 2px solid antiquewhite;
   padding: 1rem;
@@ -70,6 +89,7 @@
 .add_section_tag_header .cross_icon {
   cursor: pointer;
 }
+
 .add_section_tag_content {
   display: grid;
   grid-template-columns: 100%;
@@ -134,7 +154,7 @@ details {
   margin-right: 0.5rem;
   box-shadow: 0 3px 1px -2px rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 14%),
     0 1px 5px 0 rgb(0 0 0 / 12%);
-    height: 21px;
+  height: 21px;
 }
 .content {
   border-top: 1px whitesmoke;

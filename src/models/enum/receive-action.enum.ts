@@ -4,5 +4,6 @@ export enum ReceiveAction {
     VERIFY_BRANCH = "verify_branch",
     VERIFY_PROJECT = "verify_project",
     DELETE_DATA = "delete",
-    MERGE = "merge"
+    MERGE = "merge",
+    REFRESH = "refresh_data"
 }

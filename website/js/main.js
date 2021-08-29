@@ -9,6 +9,7 @@ app.controller("customersCtrl", function ($scope, $http) {
 
     switch (action) {
       case "application_data":
+        $scope.disableAllAction = false;
         $scope.applicationData = JSON.parse(JSON.stringify(data));
         $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
         $scope.project_dropdown_value = Array.from(
@@ -19,8 +20,12 @@ app.controller("customersCtrl", function ($scope, $http) {
         } else {
           $scope.currentProject = Object.keys(data.branch_data)[0];
         }
+
+        // initi variable
+        initializedAppVariable();
         // add
         resetAddSectionValue();
+
         break;
 
       case "verify_project":
@@ -43,9 +48,12 @@ app.controller("customersCtrl", function ($scope, $http) {
   });
   $scope.refreshTable = function () {
     $scope.applicationData.last_refreshed_on = new Date().toString();
+    $scope.disableAllAction = true;
+    sendMessageToExtension("refresh_data", {
+      currentProject: $scope.currentProject,
+    });
   };
   //search
-  $scope.searchText = "";
   $scope.search = function () {
     // if application data is not present then we dont search
     if (
@@ -65,8 +73,12 @@ app.controller("customersCtrl", function ($scope, $http) {
             res.id
           ].forEach((branchDetails) => {
             if (
-              branchDetails.parent_branch.toLowerCase().includes($scope.searchText.toLowerCase()) ||
-              branchDetails.child_branch.toLowerCase().includes($scope.searchText.toLowerCase())
+              branchDetails.parent_branch
+                .toLowerCase()
+                .includes($scope.searchText.toLowerCase()) ||
+              branchDetails.child_branch
+                .toLowerCase()
+                .includes($scope.searchText.toLowerCase())
             ) {
               tempApplicationData[res.id].push(branchDetails);
             }
@@ -81,14 +93,6 @@ app.controller("customersCtrl", function ($scope, $http) {
     }
   };
   // add section logic
-  $scope.showAddSection = false;
-  $scope.addFormObject = {
-    project_name: "",
-    parent_branch: "",
-    child_branch: "",
-    id: new Date().getTime(),
-    is_is_checked: false,
-  };
   $scope.showAddModal = function () {
     $scope.showAddSection = !$scope.showAddSection;
     if ($scope.project_dropdown_value.length === 1) {
@@ -122,46 +126,39 @@ app.controller("customersCtrl", function ($scope, $http) {
     setAddDetailsButton();
   };
   /* Checkbox */
-  $scope.selectedBranchDetails = {
-    "merging": [],
-    "ready_to_merge": [],
-    "merge_conflicts": [],
-    "up_to_date": [],
-  };
-  $scope.hasAllCheckboxClicked = {
-    "merging": false,
-    "ready_to_merge": false,
-    "merge_conflicts": false,
-    "up_to_date": false,
-  };
   $scope.checkboxHasBeenCalled = function (sectionName, selectedBranchDetails) {
     if (selectedBranchDetails.is_checked) {
       $scope.selectedBranchDetails[sectionName].push(selectedBranchDetails);
-      if ($scope.selectedBranchDetails[sectionName].length === 
-        $scope.applicationData.branch_data[$scope.currentProject][sectionName].length) {
-      $scope.hasAllCheckboxClicked[sectionName] = true;
-        }
+      if (
+        $scope.selectedBranchDetails[sectionName].length ===
+        $scope.applicationData.branch_data[$scope.currentProject][sectionName]
+          .length
+      ) {
+        $scope.hasAllCheckboxClicked[sectionName] = true;
+      }
     } else {
-      $scope.selectedBranchDetails[sectionName] = $scope.selectedBranchDetails[sectionName].filter(x => x.id !== selectedBranchDetails.id );
+      $scope.selectedBranchDetails[sectionName] = $scope.selectedBranchDetails[
+        sectionName
+      ].filter((x) => x.id !== selectedBranchDetails.id);
       $scope.hasAllCheckboxClicked[sectionName] = false;
     }
   };
-  $scope.checkAllBoxes = function(sectionName, selectedSection, currentValue) {
+  $scope.checkAllBoxes = function (sectionName, selectedSection, currentValue) {
     if (currentValue) {
       $scope.selectedBranchDetails[sectionName] = selectedSection;
     } else {
       $scope.selectedBranchDetails[sectionName] = [];
     }
-    selectedSection.forEach(res => {
+    selectedSection.forEach((res) => {
       res.is_checked = currentValue;
     });
   };
   /* Delete */
   $scope.deleteBranch = function (sectionName) {
     sendMessageToExtension("delete", {
-      items: [ ...$scope.selectedBranchDetails[sectionName]],
+      items: [...$scope.selectedBranchDetails[sectionName]],
       sectionName,
-      currentProject: $scope.currentProject
+      currentProject: $scope.currentProject,
     });
     $scope.selectedBranchDetails[sectionName] = [];
     $scope.hasAllCheckboxClicked[sectionName] = false;
@@ -169,19 +166,26 @@ app.controller("customersCtrl", function ($scope, $http) {
   /* Merge */
   $scope.mergeBranch = function (sectionName) {
     // move from 'ready to merge' to 'merging'
-    $scope.applicationData.branch_data[$scope.currentProject]['merging'] = [ ...$scope.selectedBranchDetails[sectionName]];
+    $scope.applicationData.branch_data[$scope.currentProject]["merging"] = [
+      ...$scope.selectedBranchDetails[sectionName],
+    ];
     const deselected = [];
-    $scope.applicationData.branch_data[$scope.currentProject][sectionName].forEach(res => {
-      if (!$scope.selectedBranchDetails[sectionName].find(x => x.id === res.id)) {
-          res.is_checked = true;
-          deselected.push(res);
+    $scope.applicationData.branch_data[$scope.currentProject][
+      sectionName
+    ].forEach((res) => {
+      if (
+        !$scope.selectedBranchDetails[sectionName].find((x) => x.id === res.id)
+      ) {
+        res.is_checked = true;
+        deselected.push(res);
       }
     });
-    $scope.applicationData.branch_data[$scope.currentProject][sectionName] = deselected;
+    $scope.applicationData.branch_data[$scope.currentProject][sectionName] =
+      deselected;
     // then we will call the above lines
     sendMessageToExtension("merge", {
-      items: [ ...$scope.selectedBranchDetails[sectionName]],
-      currentProject: $scope.currentProject
+      items: [...$scope.selectedBranchDetails[sectionName]],
+      currentProject: $scope.currentProject,
     });
     $scope.selectedBranchDetails[sectionName] = [];
     $scope.hasAllCheckboxClicked[sectionName] = false;
@@ -213,6 +217,34 @@ app.controller("customersCtrl", function ($scope, $http) {
     } else {
       $scope.add_project_details_button = true;
     }
+  };
+
+  initializedAppVariable = () => {
+    /* Checkbox */
+    $scope.selectedBranchDetails = {
+      merging: [],
+      ready_to_merge: [],
+      merge_conflicts: [],
+      up_to_date: [],
+    };
+    $scope.hasAllCheckboxClicked = {
+      merging: false,
+      ready_to_merge: false,
+      merge_conflicts: false,
+      up_to_date: false,
+    };
+    // add section logic
+    $scope.showAddSection = false;
+    $scope.addFormObject = {
+      project_name: "",
+      parent_branch: "",
+      child_branch: "",
+      id: new Date().getTime(),
+      is_is_checked: false,
+    };
+
+    //search
+    $scope.searchText = "";
   };
 });
 

@@ -79,7 +79,7 @@ function receiveMessage() {
           return;
 
         case ReceiveAction.ADD_DATA:
-          addDataToStorage(data);
+          addAndRefreshDataToStorage(data);
           return;
 
         case ReceiveAction.VERIFY_BRANCH:
@@ -98,6 +98,10 @@ function receiveMessage() {
           mergeData(data);
           return;
 
+        case ReceiveAction.REFRESH:
+          refreshData(data);
+          return;
+
         default:
           break;
       }
@@ -107,6 +111,44 @@ function receiveMessage() {
   );
 }
 
+async function refreshData(data: any) {
+  try {
+    const tempApplicationData: IBaseDataStructure | undefined =
+      globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+    if (tempApplicationData) {
+      let cacheApplicationData = JSON.parse(
+        JSON.stringify(tempApplicationData)
+      );
+      cacheApplicationData.branch_data[data.currentProject].merge_conflicts =
+        [];
+      cacheApplicationData.branch_data[data.currentProject].merging = [];
+      cacheApplicationData.branch_data[data.currentProject].ready_to_merge = [];
+      cacheApplicationData.branch_data[data.currentProject].up_to_date = [];
+      const sectionList = <StatusIdentifierEnum[]>(
+        Object.keys(tempApplicationData?.branch_data[data.currentProject])
+      );
+      for (const sectionName of sectionList) {
+        for (const iterator of tempApplicationData.branch_data[
+          data.currentProject
+        ][sectionName]) {
+          cacheApplicationData = await addAndRefreshDataToStorage(
+            { ...iterator, project_name: data.currentProject },
+            true,
+            cacheApplicationData
+          );
+          console.log(cacheApplicationData, "asd");
+        }
+      }
+      updateApplicationData(tempApplicationData);
+      sendMessage(SendActionEnum.APPLICATION_DATA, {
+        ...tempApplicationData,
+        current_projects: data.currentProject,
+      });
+    }
+  } catch (error) {
+    console.log(error, "Error");
+  }
+}
 async function mergeData(data: any) {
   let projectDetailsTemp = searchProject(data.currentProject);
   const tempApplicationData: IBaseDataStructure | undefined =
@@ -126,8 +168,7 @@ async function mergeData(data: any) {
         projectDetailsTemp?.uri.fsPath +
         ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
 
-      const { stdout, stderr } = await exec(cmd);
-      console.log(stderr, stdout, "asda");
+      const { stdout } = await exec(cmd);
       if (stdout) {
         element.is_checked = false;
         tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
@@ -135,28 +176,12 @@ async function mergeData(data: any) {
         );
       }
     } catch (error) {
-      console.clear();
       if (error.stdout.toLowerCase().includes("automatic merge failed")) {
         // before abort we will extract all the info using diff
         // abort the git merge
-        const cmd =
-          "cd " +
-          projectDetailsTemp?.uri.fsPath +
-          " && git diff --name-only --diff-filter=U && git merge --abort";
-        const { stdout, stderr } = await exec(cmd);
-        element.status = "Conflicted Files - ";
-        const conflictsFilesList = stdout.split("\n").filter(Boolean);
-        conflictsFilesList.forEach((fileName: string, index: number) => {
-          if (fileName.includes("/")) {
-            const splitedText = fileName.split("/");
-            if (index !== 0) {
-              element.status += ", ";
-            }
-            element.status += splitedText[splitedText.length - 1];
-          } else {
-            element.status += fileName;
-          }
-        });
+        element.status = await getTheMergeConflictDiff(
+          projectDetailsTemp?.uri.fsPath
+        );
         // add it in merge conflicts
         element.is_checked = false;
         tempApplicationData?.branch_data[
@@ -191,13 +216,37 @@ async function mergeData(data: any) {
     current_projects: vscode.workspace?.workspaceFolders?.map((x) => x.name),
   });
 }
+
+async function getTheMergeConflictDiff(
+  projectPath: string | undefined
+): Promise<string> {
+  let status = "";
+  const cmd =
+    "cd " +
+    projectPath +
+    " && git diff --name-only --diff-filter=U && git merge --abort";
+  const { stdout } = await exec(cmd);
+  status = "Conflicted Files - ";
+  const conflictsFilesList = stdout.split("\n").filter(Boolean);
+  conflictsFilesList.forEach((fileName: string, index: number) => {
+    if (fileName.includes("/")) {
+      const splitedText = fileName.split("/");
+      if (index !== 0) {
+        status += ", ";
+      }
+      status += splitedText[splitedText.length - 1];
+    } else {
+      status += fileName;
+    }
+  });
+  return status;
+}
 function verifyProject(projectName: string) {
   sendMessage(SendActionEnum.VERIFY_PROJECT, {
     branch_name: projectName,
     branch_data: searchProject(projectName),
   });
 }
-
 function searchProject(projectName: string) {
   return vscode?.workspace?.workspaceFolders?.find(
     (x) => x.name.toLowerCase() === projectName.toLowerCase()
@@ -214,7 +263,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
       "cd " +
       projectDetailsTemp?.uri.fsPath +
       ` && git rev-parse --verify origin/${verifyBranchObj.branch_name}`;
-    const { stdout, stderr } = await exec(cmd);
+    const { stderr } = await exec(cmd);
     if (stderr) {
       sendMessage(SendActionEnum.VERIFY_BRANCH, {
         verifiedFor: verifyBranchObj.verifyFor,
@@ -233,12 +282,17 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     });
   }
 }
-
-async function addDataToStorage(dataToAdd: any) {
+async function addAndRefreshDataToStorage(
+  dataToAdd: any,
+  refresh: boolean = false,
+  refreshApplicationData: IBaseDataStructure | undefined = undefined
+) {
   try {
-    const tempApplicationData: IBaseDataStructure | undefined =
+    let tempApplicationData: IBaseDataStructure | undefined =
       globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-    // TODO: we are ignoring the merge request things
+    if (refresh) {
+      tempApplicationData = JSON.parse(JSON.stringify(refreshApplicationData));
+    }
     let currentStatus;
     let numberOfCommits = 0;
     let projectDetailsTemp: vscode.WorkspaceFolder | undefined =
@@ -258,10 +312,28 @@ async function addDataToStorage(dataToAdd: any) {
     }
 
     if (+numberOfCommits) {
-      currentStatus = {
-        id: StatusIdentifierEnum.READY_FOR_MERGE,
-        status: `The source branch is ${numberOfCommits} commits behind the target branch`,
-      };
+      // this will be based on the condition we will
+      // wheather it has merge conflicts
+      try {
+        const cmd =
+          "cd " +
+          projectDetailsTemp?.uri.fsPath +
+          ` && git checkout ${dataToAdd.parent_branch} && git pull && git checkout ${dataToAdd.child_branch} && git pull && git add . && git merge ${dataToAdd.parent_branch} --no-edit --no-verify`;
+
+        await exec(cmd);
+        currentStatus = {
+          id: StatusIdentifierEnum.READY_FOR_MERGE,
+          status: `The source branch is ${numberOfCommits} commits behind the target branch`,
+        };
+      } catch (error) {
+        const statusDetails = await getTheMergeConflictDiff(
+          projectDetailsTemp?.uri.fsPath
+        );
+        currentStatus = {
+          id: StatusIdentifierEnum.MERGE_CONFLICTS,
+          status: statusDetails,
+        };
+      }
     } else {
       currentStatus = {
         id: StatusIdentifierEnum.UP_TO_DATE,
@@ -299,13 +371,20 @@ async function addDataToStorage(dataToAdd: any) {
         tempApplicationData.branch_data[dataToAdd.project_name] =
           tempBranchData;
       }
-      updateApplicationData(tempApplicationData);
-      sendMessage(SendActionEnum.APPLICATION_DATA, {
-        ...tempApplicationData,
-        current_projects: vscode.workspace?.workspaceFolders?.map(
-          (x) => x.name
-        ),
-      });
+      if (refresh) {
+        refreshApplicationData = JSON.parse(
+          JSON.stringify(tempApplicationData)
+        );
+        return refreshApplicationData;
+      } else {
+        updateApplicationData(tempApplicationData);
+        sendMessage(SendActionEnum.APPLICATION_DATA, {
+          ...tempApplicationData,
+          current_projects: vscode.workspace?.workspaceFolders?.map(
+            (x) => x.name
+          ),
+        });
+      }
     }
   } catch (error) {
     console.error("___error___", error);
