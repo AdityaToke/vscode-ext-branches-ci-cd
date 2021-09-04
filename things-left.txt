@@ -1,8 +1,5 @@
 *********** UI ************
 
-14. if there are changes then we provide message that please stash your changes
-and then perform the action.
-
 8. implementation of the merge conlficts actions as per hamza comment.
 
 6. also check the logs stuff if we can maintain to help user to know more
@@ -17,6 +14,13 @@ we are 44 commit behind but its giving 43 commit
 it may be because of local branch is not up to date try to compare it with origin.
 
 _______________________FIXED___________________________________________________________
+
+14. if there are changes then we provide message that please stash your changes
+and then perform the action. (fixed)
+15. updated the branch verify logic.(fixed)
+16. also added loading message on the screen.(fixed)
+17. on refresh show stash message if present.(fixed)
+18. also remove the branch is not present while refreshing. (fixed)
 4. implementation of the merge, merging state (Fixed)
 7. issue found Add button was enable even we dnt add parent and child branch (Fixed)
 8. there should be no same branch in parent and child branch  (Fixed)

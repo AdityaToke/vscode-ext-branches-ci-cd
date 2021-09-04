@@ -24,12 +24,17 @@
   </div>
   <article>Last Refreshed On : {{ applicationData.last_refreshed_on }}</article>
   <!-- Show any message required -->
-  <article ng-if="disableAllAction" class="message_section_tag">
+  <article ng-if="disableAllAction || stashError" class="message_section_tag">
     <header><i class="fa fa-exclamation-circle"></i>Info Message</header>
     <section ng-if="disableAllAction">
       Git Branch CI/CD is refreshing all your branches.
       <br />
       Dont panic if your branch name in bottom right keeps on changing.
+    </section>
+    <section ng-if="stashError">
+      Please stash your changes before performing Refresh and Merging action.
+      <br />
+      After stash try performing the action again.
     </section>
   </article>
   <!-- project dropdown -->
@@ -88,6 +93,9 @@
           <p ng-if="is_parent_branch_exists === true" class="warning text-sm">
             Parent branch doesn't exists.
           </p>
+          <p ng-if="is_parent_branch_exists === null" class="text-sm">
+            Loading...
+          </p>
           <p ng-if="is_parent_branch_exists === false" class="success text-sm">
             Parent branch exists.
           </p>
@@ -106,6 +114,9 @@
           />
           <p ng-if="is_child_branch_exists === true" class="warning text-sm">
             Child branch doesn't exists.
+          </p>
+          <p ng-if="is_child_branch_exists === null" class="text-sm">
+            Loading...
           </p>
           <p ng-if="is_child_branch_exists === false" class="success text-sm">
             Child branch exists.

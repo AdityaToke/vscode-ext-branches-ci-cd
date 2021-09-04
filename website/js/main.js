@@ -8,8 +8,21 @@ app.controller("customersCtrl", function ($scope, $http) {
     const { action, data } = event.data;
 
     switch (action) {
+      case "start_refreshing":
+        $scope.startRefreshing();
+        break;
+      case "ready_to_start_merging":
+        $scope.startMerging("ready_to_merge");
+        break;
+      case "stash_error":
+        if (data) {
+          $scope.disableAllAction = false;
+          $scope.stashError = data;
+        }
+        break;
       case "application_data":
         $scope.disableAllAction = false;
+        $scope.stashError = false;
         $scope.applicationData = JSON.parse(JSON.stringify(data));
         $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
         $scope.project_dropdown_value = Array.from(
@@ -20,12 +33,10 @@ app.controller("customersCtrl", function ($scope, $http) {
         } else {
           $scope.currentProject = Object.keys(data.branch_data)[0];
         }
-
         // initi variable
         initializedAppVariable();
         // add
         resetAddSectionValue();
-
         break;
 
       case "verify_project":
@@ -46,11 +57,18 @@ app.controller("customersCtrl", function ($scope, $http) {
     }
     $scope.$apply();
   });
-  $scope.refreshTable = function () {
+
+  $scope.startRefreshing = function () {
     $scope.applicationData.last_refreshed_on = new Date().toString();
     $scope.disableAllAction = true;
     sendMessageToExtension("refresh_data", {
       currentProject: $scope.currentProject,
+    });
+  };
+  $scope.refreshTable = function () {
+    sendMessageToExtension("is_stash", {
+      currentProject: $scope.currentProject,
+      from: "refresh",
     });
   };
   //search
@@ -111,12 +129,30 @@ app.controller("customersCtrl", function ($scope, $http) {
   };
 
   $scope.verifyBranch = function (branchName, from) {
-    sendMessageToExtension("verify_branch", {
-      verifyFor: from,
-      branch_name: branchName,
-      project_details: $scope.add_project_details_inputs,
-      project_name: $scope.addFormObject.project_name,
-    });
+    let isCurrentFieldTruthy = false;
+    if (from === "child") {
+      if ($scope.addFormObject.child_branch) {
+        $scope.is_child_branch_exists = null;
+        isCurrentFieldTruthy = true;
+      } else {
+        $scope.is_child_branch_exists = "";
+      }
+    } else {
+      if ($scope.addFormObject.parent_branch) {
+        isCurrentFieldTruthy = true;
+        $scope.is_parent_branch_exists = null;
+      } else {
+        $scope.is_parent_branch_exists = "";
+      }
+    }
+    if (isCurrentFieldTruthy) {
+      sendMessageToExtension("verify_branch", {
+        verifyFor: from,
+        branch_name: branchName,
+        project_details: $scope.add_project_details_inputs,
+        project_name: $scope.addFormObject.project_name,
+      });
+    }
   };
 
   $scope.setProjectName = function () {
@@ -165,6 +201,12 @@ app.controller("customersCtrl", function ($scope, $http) {
   };
   /* Merge */
   $scope.mergeBranch = function (sectionName) {
+    sendMessageToExtension("is_stash", {
+      currentProject: $scope.currentProject,
+      from: "merge",
+    });
+  };
+  $scope.startMerging = function (sectionName) {
     // move from 'ready to merge' to 'merging'
     $scope.applicationData.branch_data[$scope.currentProject]["merging"] = [
       ...$scope.selectedBranchDetails[sectionName],
@@ -192,8 +234,8 @@ app.controller("customersCtrl", function ($scope, $http) {
   };
   resetAddSectionValue = () => {
     $scope.showAddSection = false;
-    $scope.is_parent_branch_exists = null;
-    $scope.is_child_branch_exists = null;
+    $scope.is_parent_branch_exists = "";
+    $scope.is_child_branch_exists = "";
     $scope.addFormObject = {
       project_name: "",
       parent_branch: "",
@@ -245,6 +287,7 @@ app.controller("customersCtrl", function ($scope, $http) {
 
     //search
     $scope.searchText = "";
+    $scope.stashError = false;
   };
 });
 

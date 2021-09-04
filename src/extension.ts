@@ -74,6 +74,9 @@ function receiveMessage() {
     (message) => {
       const { action, data } = message;
       switch (action) {
+        case ReceiveAction.IS_STASH:
+          changesIsStashed(data, true);
+          return;
         case ReceiveAction.UPDATE_DATA:
           updateApplicationData(data);
           return;
@@ -111,42 +114,66 @@ function receiveMessage() {
   );
 }
 
-async function refreshData(data: any) {
-  try {
-    const tempApplicationData: IBaseDataStructure | undefined =
-      globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-    if (tempApplicationData) {
-      let cacheApplicationData = JSON.parse(
-        JSON.stringify(tempApplicationData)
-      );
-      cacheApplicationData.branch_data[data.currentProject].merge_conflicts =
-        [];
-      cacheApplicationData.branch_data[data.currentProject].merging = [];
-      cacheApplicationData.branch_data[data.currentProject].ready_to_merge = [];
-      cacheApplicationData.branch_data[data.currentProject].up_to_date = [];
-      const sectionList = <StatusIdentifierEnum[]>(
-        Object.keys(tempApplicationData?.branch_data[data.currentProject])
-      );
-      for (const sectionName of sectionList) {
-        for (const iterator of tempApplicationData.branch_data[
-          data.currentProject
-        ][sectionName]) {
-          cacheApplicationData = await addAndRefreshDataToStorage(
-            { ...iterator, project_name: data.currentProject },
-            true,
-            cacheApplicationData
-          );
-          console.log(cacheApplicationData, "asd");
-        }
+async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
+  const projectDetailsTemp = searchProject(data.currentProject);
+  const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git status`;
+  const { stdout } = await exec(cmd);
+  if (stdout.toLowerCase().includes("changes not staged for commit")) {
+    sendMessage(SendActionEnum.STASH_ERROR, true);
+    return false;
+  }
+  if (sendReturnResponseToWeb) {
+    if (data.from === "refresh") {
+      sendMessage(SendActionEnum.START_REFRESHING, true);
+    } else {
+      if (data.from === "merge") {
+        sendMessage(SendActionEnum.READY_TO_START_MERGING, true);
       }
-      updateApplicationData(tempApplicationData);
-      sendMessage(SendActionEnum.APPLICATION_DATA, {
-        ...tempApplicationData,
-        current_projects: data.currentProject,
-      });
     }
-  } catch (error) {
-    console.log(error, "Error");
+  }
+  return true;
+}
+async function refreshData(data: any) {
+  if (await changesIsStashed(data)) {
+    try {
+      const tempApplicationData: IBaseDataStructure | undefined =
+        globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+      if (tempApplicationData) {
+        let cacheApplicationData = JSON.parse(
+          JSON.stringify(tempApplicationData)
+        );
+        cacheApplicationData.branch_data[data.currentProject].merge_conflicts =
+          [];
+        cacheApplicationData.branch_data[data.currentProject].merging = [];
+        cacheApplicationData.branch_data[data.currentProject].ready_to_merge =
+          [];
+        cacheApplicationData.branch_data[data.currentProject].up_to_date = [];
+        const sectionList = <StatusIdentifierEnum[]>(
+          Object.keys(tempApplicationData?.branch_data[data.currentProject])
+        );
+        for (const sectionName of sectionList) {
+          for (const iterator of tempApplicationData.branch_data[
+            data.currentProject
+          ][sectionName]) {
+            const projectDetails = await addAndRefreshDataToStorage(
+              { ...iterator, project_name: data.currentProject },
+              true,
+              cacheApplicationData
+            );
+            if (projectDetails) {
+              cacheApplicationData = projectDetails;
+            }
+          }
+        }
+        updateApplicationData(cacheApplicationData);
+        sendMessage(SendActionEnum.APPLICATION_DATA, {
+          ...cacheApplicationData,
+          current_projects: data.currentProject,
+        });
+      }
+    } catch (error) {
+      console.log(error, "Error");
+    }
   }
 }
 async function mergeData(data: any) {
@@ -195,12 +222,8 @@ async function mergeData(data: any) {
       ) {
         // again add the git push command
         // and after that we will add it to up to date.
-        try {
           const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
           await exec(cmd);
-        } catch (error) {
-          console.log(error, "error");
-        }
         // add it in up to date
         element.is_checked = false;
         element.status = "The branch is up to date.";
@@ -262,17 +285,17 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     const cmd =
       "cd " +
       projectDetailsTemp?.uri.fsPath +
-      ` && git rev-parse --verify origin/${verifyBranchObj.branch_name}`;
-    const { stderr } = await exec(cmd);
-    if (stderr) {
+      ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
+    const { stdout, stderr } = await exec(cmd);
+    if (stdout) {
       sendMessage(SendActionEnum.VERIFY_BRANCH, {
         verifiedFor: verifyBranchObj.verifyFor,
-        value: true,
+        value: false,
       });
     } else {
       sendMessage(SendActionEnum.VERIFY_BRANCH, {
         verifiedFor: verifyBranchObj.verifyFor,
-        value: false,
+        value: true,
       });
     }
   } catch (error) {
@@ -326,6 +349,14 @@ async function addAndRefreshDataToStorage(
           status: `The source branch is ${numberOfCommits} commits behind the target branch`,
         };
       } catch (error) {
+        if (
+          error.stderr.includes("from the remote, but no such ref was fetched")
+        ) {
+          showMessageOnScreen(
+            `Either of branch is not present on remote ${dataToAdd.parent_branch} and ${dataToAdd.child_branch}.`
+          );
+          return false;
+        }
         const statusDetails = await getTheMergeConflictDiff(
           projectDetailsTemp?.uri.fsPath
         );
@@ -413,7 +444,6 @@ function updateApplicationData(data: any): void {
 }
 function sendMessage(action: string, data: any): void {
   if (currentPanel) {
-    console.log(action, data, "data from update applixationdata");
     currentPanel.webview.postMessage({ action, data });
   }
 }
