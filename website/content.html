@@ -6,13 +6,14 @@
       class="search_input_tag"
       ng-model="searchText"
       ng-change="search()"
+      ng-disabled="showLogs"
     />
     <button
       type="button"
       ng-if="!showAddSection"
       class="btn btn-primary"
       ng-click="showAddModal()"
-      ng-disabled="disableAllAction"
+      ng-disabled="disableAllAction || showLogs"
     >
       Add
     </button>
@@ -20,6 +21,7 @@
       title="Refresh"
       class="refresh_icon fa fa-refresh"
       ng-click="refreshTable()"
+      ng-if="!showLogs"
     ></i>
   </div>
   <article>Last Refreshed On : {{ applicationData.last_refreshed_on }}</article>
@@ -40,18 +42,27 @@
   <!-- project dropdown -->
   <article class="dropdown_block">
     <label>Select your project :</label>
-    <select
-      class="dropdown_input project_dropdown"
-      ng-change="selectProject(currentProject)"
-      ng-model="currentProject"
-    >
-      <option
-        ng-repeat="projectName in project_dropdown_value"
-        ng-value="projectName"
+    <section class="block">
+      <select
+        class="dropdown_input project_dropdown"
+        ng-change="selectProject(currentProject)"
+        ng-model="currentProject"
       >
-        {{ projectName }}
-      </option>
-    </select>
+        <option
+          ng-repeat="projectName in project_dropdown_value"
+          ng-value="projectName"
+        >
+          {{ projectName }}
+        </option>
+      </select>
+      <button
+        type="button"
+        class="btn btn-secondary float-right"
+        ng-click="toggleLogSection()"
+      >
+        {{showLogs ? 'Hide Logs' : 'Show Logs' }}
+      </button>
+    </section>
   </article>
   <!-- Add Section -->
   <section ng-if="showAddSection" class="add_section_tag">
@@ -142,99 +153,104 @@
       </button>
     </div>
   </section>
-  <!-- Branch Data and Status Section -->
-  <section ng-if="applicationData.branch_data[currentProject]">
-    <details ng-repeat="data in applicationData.status_details">
-      <summary class="header" ng-class="data.id">
-        <span>{{ data.name }}</span>
-        <button
-          type="button"
-          ng-if="data.is_deletable && selectedBranchDetails[data.id].length > 0"
-          class="action_button btn btn-danger"
-          ng-click="deleteBranch(data.id)"
-          ng-disabled="disableAllAction"
-        >
-          Delete
-        </button>
-        <button
-          type="button"
-          ng-if="data.is_mergable && selectedBranchDetails[data.id].length > 0"
-          class="action_button btn btn-warning"
-          ng-click="mergeBranch(data.id)"
-          ng-disabled="disableAllAction"
-        >
-          Merge
-        </button>
-      </summary>
-      <div class="content">
-        <table>
-          <tr>
-            <th style="width: 23px">
-              <input
-                type="checkbox"
-                name="selectAllCheckBox"
-                ng-id="data.id"
-                ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0 || data.id === 'merging' "
-                ng-click="checkAllBoxes(data.id, applicationData.branch_data[currentProject][data.id], hasAllCheckboxClicked[data.id])"
-                ng-model="hasAllCheckboxClicked[data.id]"
-              />
-            </th>
-            <th>Parent Branch</th>
-            <th>Child Branch</th>
-            <th>Status</th>
-            <th ng-if="data.id === 'merge_conflicts'">Action</th>
-          </tr>
-          <tr
-            ng-if="applicationData.branch_data[currentProject][data.id].length"
-            ng-repeat="branchDetails in applicationData.branch_data[currentProject][data.id]"
+  <article ng-if="!showLogs">
+    <!-- Branch Data and Status Section -->
+    <section ng-if="applicationData.branch_data[currentProject]">
+      <details ng-repeat="data in applicationData.status_details">
+        <summary class="header" ng-class="data.id">
+          <span>{{ data.name }}</span>
+          <button
+            type="button"
+            ng-if="data.is_deletable && selectedBranchDetails[data.id].length > 0"
+            class="action_button btn btn-danger"
+            ng-click="deleteBranch(data.id)"
+            ng-disabled="disableAllAction"
           >
-            <td>
-              <input
-                type="checkbox"
-                ng-model="branchDetails.is_checked"
-                ng-disabled="data.id === 'merging'"
-                ng-click="checkboxHasBeenCalled(data.id, branchDetails)"
-              />
-            </td>
-            <td>{{ branchDetails.parent_branch }}</td>
-            <td>{{ branchDetails.child_branch }}</td>
-            <td>{{ branchDetails.status }}</td>
-            <td ng-if="data.id === 'merge_conflicts'">
-              <button
-              type="button"
-              class="btn btn-primary"
-              ng-disabled="disableAllAction"
-              ng-click="checkOutFixConflicts(branchDetails)"
+            Delete
+          </button>
+          <button
+            type="button"
+            ng-if="data.is_mergable && selectedBranchDetails[data.id].length > 0"
+            class="action_button btn btn-warning"
+            ng-click="mergeBranch(data.id)"
+            ng-disabled="disableAllAction"
+          >
+            Merge
+          </button>
+        </summary>
+        <div class="content">
+          <table>
+            <tr>
+              <th style="width: 23px">
+                <input
+                  type="checkbox"
+                  name="selectAllCheckBox"
+                  ng-id="data.id"
+                  ng-disabled="applicationData.branch_data[currentProject][data.id].length === 0 || data.id === 'merging' "
+                  ng-click="checkAllBoxes(data.id, applicationData.branch_data[currentProject][data.id], hasAllCheckboxClicked[data.id])"
+                  ng-model="hasAllCheckboxClicked[data.id]"
+                />
+              </th>
+              <th>Parent Branch</th>
+              <th>Child Branch</th>
+              <th>Status</th>
+              <th ng-if="data.id === 'merge_conflicts'">Action</th>
+            </tr>
+            <tr
+              ng-if="applicationData.branch_data[currentProject][data.id].length"
+              ng-repeat="branchDetails in applicationData.branch_data[currentProject][data.id]"
             >
-              Checkout and Fix Conflicts
-            </button>
-            </td>
-          </tr>
-          <tr
-            ng-if="!applicationData.branch_data[currentProject][data.id].length"
-          >
-            <td colspan="4" rowspan="1" class="empty_message">
-              You have zero branches in this state.
-            </td>
-          </tr>
-        </table>
-      </div>
-    </details>
-  </section>
-  <section
-    ng-if="!applicationData.branch_data[currentProject]"
-    class="no_data_message_section"
-  >
-    <header class="text-xxlarge">&#128528; Oops! No data found.</header>
-    <section class="no_data_message_section__description">
-      <h3>You can add branch in this project by following this procedure:</h3>
-      <ol type="1">
-        <li>Click on the "Add" button</li>
-        <li>
-          In the add section you can type add your project name or select from
-          the dropdown.
-        </li>
-      </ol>
+              <td>
+                <input
+                  type="checkbox"
+                  ng-model="branchDetails.is_checked"
+                  ng-disabled="data.id === 'merging'"
+                  ng-click="checkboxHasBeenCalled(data.id, branchDetails)"
+                />
+              </td>
+              <td>{{ branchDetails.parent_branch }}</td>
+              <td>{{ branchDetails.child_branch }}</td>
+              <td>{{ branchDetails.status }}</td>
+              <td ng-if="data.id === 'merge_conflicts'">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  ng-disabled="disableAllAction"
+                  ng-click="checkOutFixConflicts(branchDetails)"
+                >
+                  Checkout and Fix Conflicts
+                </button>
+              </td>
+            </tr>
+            <tr
+              ng-if="!applicationData.branch_data[currentProject][data.id].length"
+            >
+              <td colspan="4" rowspan="1" class="empty_message">
+                You have zero branches in this state.
+              </td>
+            </tr>
+          </table>
+        </div>
+      </details>
     </section>
-  </section>
+    <section
+      ng-if="!applicationData.branch_data[currentProject]"
+      class="no_data_message_section"
+    >
+      <header class="text-xxlarge">&#128528; Oops! No data found.</header>
+      <section class="no_data_message_section__description">
+        <h3>You can add branch in this project by following this procedure:</h3>
+        <ol type="1">
+          <li>Click on the "Add" button</li>
+          <li>
+            In the add section you can type add your project name or select from
+            the dropdown.
+          </li>
+        </ol>
+      </section>
+    </section>
+  </article>
+  <article ng-if="showLogs" class="logsSection">
+    <p ng-repeat="logs in logsInfo">{{logs}}</p>
+  </article>
 </div>

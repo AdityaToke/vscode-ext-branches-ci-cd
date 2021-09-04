@@ -4,10 +4,15 @@ app.controller("customersCtrl", function ($scope, $http) {
   $scope.currentProject = "";
   $scope.globalApplicationData;
   $scope.add_project_details_button = true;
+  $scope.showLogs = false;
+  $scope.logsInfo = {};
   window.addEventListener("message", (event) => {
     const { action, data } = event.data;
 
     switch (action) {
+      case "logs":
+        $scope.logsInfo = data;
+        break;
       case "start_refreshing":
         $scope.startRefreshing();
         break;
@@ -63,7 +68,6 @@ app.controller("customersCtrl", function ($scope, $http) {
   });
 
   $scope.startRefreshing = function () {
-    $scope.applicationData.last_refreshed_on = new Date().toString();
     $scope.disableAllAction = true;
     sendMessageToExtension("refresh_data", {
       currentProject: $scope.currentProject,
@@ -253,6 +257,10 @@ app.controller("customersCtrl", function ($scope, $http) {
       ...data,
     });
   };
+  $scope.toggleLogSection = function () {
+    $scope.showLogs = !$scope.showLogs;
+    sendMessageToExtension("show_logs", true);
+  };
   resetAddSectionValue = () => {
     $scope.showAddSection = false;
     $scope.is_parent_branch_exists = "";
@@ -267,7 +275,6 @@ app.controller("customersCtrl", function ($scope, $http) {
     $scope.add_project_details_inputs = true;
     $scope.add_project_details_button = true;
   };
-
   setAddDetailsButton = () => {
     if (
       $scope.addFormObject.parent_branch !==
@@ -281,7 +288,6 @@ app.controller("customersCtrl", function ($scope, $http) {
       $scope.add_project_details_button = true;
     }
   };
-
   initializedAppVariable = () => {
     /* Checkbox */
     $scope.selectedBranchDetails = {
@@ -311,7 +317,6 @@ app.controller("customersCtrl", function ($scope, $http) {
     $scope.stashError = false;
   };
 });
-
 function sendMessageToExtension(action, data) {
   vscode.postMessage({
     action,

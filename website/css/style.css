@@ -221,3 +221,13 @@ table {
 .up_to_date {
   background: var(--yellow);
 }
+
+.logsSection {
+  border: 2px solid white;
+  padding: 0.5rem 1rem;
+  border-radius: 2px;
+}
+
+input.search_input_tag:disabled {
+  background-color: transparent;
+}

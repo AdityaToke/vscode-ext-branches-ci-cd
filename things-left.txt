@@ -1,8 +1,5 @@
 *********** UI ************
 
-6. also check the logs stuff if we can maintain to help user to know more
-(before sleep)
-
 5. check its handling in the multiple workspace
 when checking multiple workspace we
 need to handle the test cases
@@ -19,6 +16,12 @@ it may be because of local branch is not up to date try to compare it with origi
 
 _______________________FIXED___________________________________________________________
 
+6. also check the logs stuff if we can maintain to help user to know more
+-> 
+[info] |  time stamp - <from function name> | <message><data>
+[error] | time stam - <function name> | <error message><data>
+(Fixed)
+19. fixed the last refresh date issue (Fixed)
 8. implementation of the merge conlficts actions as per hamza comment.
 (Fixed)
 14. if there are changes then we provide message that please stash your changes
