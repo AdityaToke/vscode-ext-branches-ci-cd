@@ -52,6 +52,10 @@ app.controller("customersCtrl", function ($scope, $http) {
         }
         setAddDetailsButton();
         break;
+
+      case "start_fixing_conflicts":
+        $scope.startFixingConflicts(data);
+        breal;
       default:
         break;
     }
@@ -122,6 +126,7 @@ app.controller("customersCtrl", function ($scope, $http) {
     resetAddSectionValue();
   };
   $scope.addBranch = function () {
+    $scope.add_project_details_button = true;
     sendMessageToExtension("add_data", {
       ...$scope.addFormObject,
       project_details: $scope.add_project_details_inputs,
@@ -201,6 +206,7 @@ app.controller("customersCtrl", function ($scope, $http) {
   };
   /* Merge */
   $scope.mergeBranch = function (sectionName) {
+    $scope.disableAllAction = true;
     sendMessageToExtension("is_stash", {
       currentProject: $scope.currentProject,
       from: "merge",
@@ -231,6 +237,21 @@ app.controller("customersCtrl", function ($scope, $http) {
     });
     $scope.selectedBranchDetails[sectionName] = [];
     $scope.hasAllCheckboxClicked[sectionName] = false;
+  };
+  /* Resolve Merge conflicts */
+  $scope.checkOutFixConflicts = function (selectedBranchData) {
+    $scope.disableAllAction = true;
+    sendMessageToExtension("is_stash", {
+      currentProject: $scope.currentProject,
+      from: "conflicts",
+      ...selectedBranchData,
+    });
+  };
+  $scope.startFixingConflicts = function (data) {
+    sendMessageToExtension("resolve_conflicts", {
+      currentProject: $scope.currentProject,
+      ...data,
+    });
   };
   resetAddSectionValue = () => {
     $scope.showAddSection = false;

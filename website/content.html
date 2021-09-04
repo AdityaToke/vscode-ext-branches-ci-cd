@@ -27,7 +27,7 @@
   <article ng-if="disableAllAction || stashError" class="message_section_tag">
     <header><i class="fa fa-exclamation-circle"></i>Info Message</header>
     <section ng-if="disableAllAction">
-      Git Branch CI/CD is refreshing all your branches.
+      Git Branch CI/CD is performing action on your branch.
       <br />
       Dont panic if your branch name in bottom right keeps on changing.
     </section>
@@ -182,6 +182,7 @@
             <th>Parent Branch</th>
             <th>Child Branch</th>
             <th>Status</th>
+            <th ng-if="data.id === 'merge_conflicts'">Action</th>
           </tr>
           <tr
             ng-if="applicationData.branch_data[currentProject][data.id].length"
@@ -198,6 +199,16 @@
             <td>{{ branchDetails.parent_branch }}</td>
             <td>{{ branchDetails.child_branch }}</td>
             <td>{{ branchDetails.status }}</td>
+            <td ng-if="data.id === 'merge_conflicts'">
+              <button
+              type="button"
+              class="btn btn-primary"
+              ng-disabled="disableAllAction"
+              ng-click="checkOutFixConflicts(branchDetails)"
+            >
+              Checkout and Fix Conflicts
+            </button>
+            </td>
           </tr>
           <tr
             ng-if="!applicationData.branch_data[currentProject][data.id].length"

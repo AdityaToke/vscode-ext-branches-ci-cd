@@ -105,6 +105,10 @@ function receiveMessage() {
           refreshData(data);
           return;
 
+        case ReceiveAction.RESOLVE_CONFLICTS:
+          resolveConflicts(data);
+          return;
+
         default:
           break;
       }
@@ -114,6 +118,48 @@ function receiveMessage() {
   );
 }
 
+async function resolveConflicts(data: any) {
+  let projectDetailsTemp = searchProject(data.currentProject);
+  const cmd =
+  "cd " +
+  projectDetailsTemp?.uri.fsPath +
+  ` && git checkout ${data.parent_branch} && git pull && git checkout ${data.child_branch} && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
+  try {
+    await exec(cmd);
+    // TODO: need to find logic on if error is not thorwn in merge conflicts.
+    // if error is thrown means it have Merge conflicts.
+
+  } catch (error) {
+    if (error.stdout.toLowerCase().includes("automatic merge failed")) {
+      try {
+        const cmd =
+          "cd " +
+          projectDetailsTemp?.uri.fsPath +
+          ` && git diff --name-only --diff-filter=U`;
+
+        const { stdout } = await exec(cmd);
+
+        const conflictsFilesList = stdout.split("\n").filter(Boolean);
+        for (const filesPath of conflictsFilesList) {
+          await vscode.commands.executeCommand(
+            "vscode.open",
+            vscode.Uri.file(projectDetailsTemp?.uri.fsPath+"/"+filesPath)
+          );
+        }
+        showMessageOnScreen("After resolving merge conflicts click on refresh icon to update the extension.")
+        const tempApplicationData: IBaseDataStructure | undefined =
+        globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+        updateApplicationData(tempApplicationData);
+        sendMessage(SendActionEnum.APPLICATION_DATA, {
+          ...tempApplicationData,
+          current_projects: [data.currentProject]
+        });
+      } catch (error) {
+        console.log(error, "error");
+      }
+    }
+  }
+}
 async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
   const projectDetailsTemp = searchProject(data.currentProject);
   const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git status`;
@@ -128,6 +174,10 @@ async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
     } else {
       if (data.from === "merge") {
         sendMessage(SendActionEnum.READY_TO_START_MERGING, true);
+      } else {
+        if (data.from === "conflicts") {
+          sendMessage(SendActionEnum.START_FIXING_CONFLICTS, data);
+        }
       }
     }
   }
@@ -168,7 +218,7 @@ async function refreshData(data: any) {
         updateApplicationData(cacheApplicationData);
         sendMessage(SendActionEnum.APPLICATION_DATA, {
           ...cacheApplicationData,
-          current_projects: data.currentProject,
+          current_projects: [data.currentProject],
         });
       }
     } catch (error) {
@@ -222,8 +272,8 @@ async function mergeData(data: any) {
       ) {
         // again add the git push command
         // and after that we will add it to up to date.
-          const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
-          await exec(cmd);
+        const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
+        await exec(cmd);
         // add it in up to date
         element.is_checked = false;
         element.status = "The branch is up to date.";
@@ -251,17 +301,21 @@ async function getTheMergeConflictDiff(
   const { stdout } = await exec(cmd);
   status = "Conflicted Files - ";
   const conflictsFilesList = stdout.split("\n").filter(Boolean);
-  conflictsFilesList.forEach((fileName: string, index: number) => {
-    if (fileName.includes("/")) {
-      const splitedText = fileName.split("/");
-      if (index !== 0) {
-        status += ", ";
+  if (conflictsFilesList.length < 5) {
+    conflictsFilesList.forEach((fileName: string, index: number) => {
+      if (fileName.includes("/")) {
+        const splitedText = fileName.split("/");
+        if (index !== 0) {
+          status += ", ";
+        }
+        status += splitedText[splitedText.length - 1];
+      } else {
+        status += fileName;
       }
-      status += splitedText[splitedText.length - 1];
-    } else {
-      status += fileName;
-    }
-  });
+    });
+  } else {
+    status = `Total ${conflictsFilesList.length} conflicted files.`;
+  }
   return status;
 }
 function verifyProject(projectName: string) {

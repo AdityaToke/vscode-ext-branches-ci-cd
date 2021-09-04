@@ -4,5 +4,6 @@ export enum SendActionEnum {
     VERIFY_BRANCH = "verify_branch",
     STASH_ERROR = "stash_error",
     READY_TO_START_MERGING = "ready_to_start_merging",
-    START_REFRESHING = "start_refreshing"
+    START_REFRESHING = "start_refreshing",
+    START_FIXING_CONFLICTS = "start_fixing_conflicts"
 }

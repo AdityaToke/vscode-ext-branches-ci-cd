@@ -1,10 +1,14 @@
 *********** UI ************
 
-8. implementation of the merge conlficts actions as per hamza comment.
-
 6. also check the logs stuff if we can maintain to help user to know more
+(before sleep)
 
 5. check its handling in the multiple workspace
+when checking multiple workspace we
+need to handle the test cases
+of showing project or all list of projects data added
+at that time we can say
+current project is not present in the current workspace.
 
 _________________________NOT ABLE TO REPRODUCE AGAIN_____________________________
 
@@ -15,6 +19,8 @@ it may be because of local branch is not up to date try to compare it with origi
 
 _______________________FIXED___________________________________________________________
 
+8. implementation of the merge conlficts actions as per hamza comment.
+(Fixed)
 14. if there are changes then we provide message that please stash your changes
 and then perform the action. (fixed)
 15. updated the branch verify logic.(fixed)

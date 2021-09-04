@@ -6,5 +6,6 @@ export enum ReceiveAction {
     DELETE_DATA = "delete",
     MERGE = "merge",
     REFRESH = "refresh_data",
-    IS_STASH = "is_stash"
+    IS_STASH = "is_stash",
+    RESOLVE_CONFLICTS = "resolve_conflicts",
 }

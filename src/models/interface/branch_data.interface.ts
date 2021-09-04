@@ -6,6 +6,7 @@ export interface IBranchDetails {
     child_branch: string;
     status: string;
     is_checked: boolean;
+    conflictsFilesPath?: string[];
 }
 
 export interface IBranchData {
