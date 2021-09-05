@@ -228,6 +228,11 @@ table {
   border-radius: 2px;
 }
 
+.logsSection p {
+  word-break: break-word;
+  white-space: nowrap;
+}
+
 input.search_input_tag:disabled {
   background-color: transparent;
 }

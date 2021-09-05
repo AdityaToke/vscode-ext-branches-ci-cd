@@ -33,10 +33,11 @@ app.controller("customersCtrl", function ($scope, $http) {
         $scope.project_dropdown_value = Array.from(
           new Set([...Object.keys(data.branch_data), ...data.current_projects])
         ).filter(Boolean);
-        if ($scope.project_dropdown_value.length === 1) {
+        if (
+          $scope.project_dropdown_value.length === 1 ||
+          !$scope.currentProject
+        ) {
           $scope.currentProject = $scope.project_dropdown_value[0];
-        } else {
-          $scope.currentProject = Object.keys(data.branch_data)[0];
         }
         // initi variable
         initializedAppVariable();
@@ -68,12 +69,12 @@ app.controller("customersCtrl", function ($scope, $http) {
   });
 
   $scope.startRefreshing = function () {
-    $scope.disableAllAction = true;
     sendMessageToExtension("refresh_data", {
       currentProject: $scope.currentProject,
     });
   };
   $scope.refreshTable = function () {
+    $scope.disableAllAction = true;
     sendMessageToExtension("is_stash", {
       currentProject: $scope.currentProject,
       from: "refresh",
@@ -123,8 +124,10 @@ app.controller("customersCtrl", function ($scope, $http) {
     $scope.showAddSection = !$scope.showAddSection;
     if ($scope.project_dropdown_value.length === 1) {
       $scope.addFormObject.project_name = $scope.project_dropdown_value[0];
-      $scope.add_project_details_inputs = false;
+    } else {
+      $scope.addFormObject.project_name = $scope.currentProject;
     }
+    $scope.add_project_details_inputs = false;
   };
   $scope.closeAddSection = function () {
     resetAddSectionValue();

@@ -17,12 +17,14 @@
     >
       Add
     </button>
-    <i
-      title="Refresh"
-      class="refresh_icon fa fa-refresh"
-      ng-click="refreshTable()"
+    <button
+      class="btn btn-icon refresh_icon"
+      ng-disabled="disableAllAction"
       ng-if="!showLogs"
-    ></i>
+      ng-click="refreshTable()"
+    >
+      <i title="Refresh" class="fa fa-refresh"></i>
+    </button>
   </div>
   <article>Last Refreshed On : {{ applicationData.last_refreshed_on }}</article>
   <!-- Show any message required -->
@@ -47,6 +49,7 @@
         class="dropdown_input project_dropdown"
         ng-change="selectProject(currentProject)"
         ng-model="currentProject"
+        ng-disabled="disableAllAction"
       >
         <option
           ng-repeat="projectName in project_dropdown_value"
@@ -225,7 +228,11 @@
             <tr
               ng-if="!applicationData.branch_data[currentProject][data.id].length"
             >
-              <td colspan="4" rowspan="1" class="empty_message">
+              <td
+                colspan="{{data.id === 'merge_conflicts' ? 5 : 4 }}"
+                rowspan="1"
+                class="empty_message"
+              >
                 You have zero branches in this state.
               </td>
             </tr>

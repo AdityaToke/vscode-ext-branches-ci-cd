@@ -16,6 +16,19 @@ it may be because of local branch is not up to date try to compare it with origi
 
 _______________________FIXED___________________________________________________________
 
+21. disable select your project dropdown when performing refresh action.
+also check for other actions
+(Fixed)
+22. also check the design issue found screenshot done (Fixed)
+20. when user select the project at that time 
+when he click on add
+at that time the dropdown should be populated with the same dropdown value
+not the first one (Fixed)
+
+and the same issue is found after adding data (Fixed)
+
+also on refresh button click it set to the first dropdown value (Fixed)
+
 6. also check the logs stuff if we can maintain to help user to know more
 -> 
 [info] |  time stamp - <from function name> | <message><data>
