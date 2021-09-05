@@ -28,9 +28,12 @@
   </div>
   <article>Last Refreshed On : {{ applicationData.last_refreshed_on }}</article>
   <!-- Show any message required -->
-  <article ng-if="disableAllAction || stashError" class="message_section_tag">
+  <article
+    ng-if="disableAllAction || stashError || projectNotPresentError "
+    class="message_section_tag"
+  >
     <header><i class="fa fa-exclamation-circle"></i>Info Message</header>
-    <section ng-if="disableAllAction">
+    <section ng-if="disableAllAction && !projectNotPresentError">
       Git Branch CI/CD is performing action on your branch.
       <br />
       Dont panic if your branch name in bottom right keeps on changing.
@@ -39,6 +42,13 @@
       Please stash your changes before performing Refresh and Merging action.
       <br />
       After stash try performing the action again.
+    </section>
+    <section ng-if="projectNotPresentError">
+      Selected project is not current workspace.
+      <br />
+      To perform actions on that please add that project in your workspace.
+      <br />
+      And reopen the Extension.
     </section>
   </article>
   <!-- project dropdown -->
@@ -49,10 +59,9 @@
         class="dropdown_input project_dropdown"
         ng-change="selectProject(currentProject)"
         ng-model="currentProject"
-        ng-disabled="disableAllAction"
       >
         <option
-          ng-repeat="projectName in project_dropdown_value"
+          ng-repeat="projectName in projectsPresentInData"
           ng-value="projectName"
         >
           {{ projectName }}
@@ -84,12 +93,10 @@
           <select
             name="projectExistingSelect"
             class="dropdown_input project_dropdown"
-            ng-options="projectName for projectName in project_dropdown_value"
+            ng-options="projectName for projectName in projectsPresentInCurrentWorkspace"
             ng-change="setProjectName()"
             ng-model="addFormObject.project_name"
-          >
-            <option value="">Select Project</option>
-          </select>
+          ></select>
         </span>
       </div>
       <div class="branches_input_block">

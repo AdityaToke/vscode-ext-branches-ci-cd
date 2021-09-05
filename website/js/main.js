@@ -28,16 +28,17 @@ app.controller("customersCtrl", function ($scope, $http) {
       case "application_data":
         $scope.disableAllAction = false;
         $scope.stashError = false;
+        $scope.projectNotPresentError = false;
         $scope.applicationData = JSON.parse(JSON.stringify(data));
         $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
-        $scope.project_dropdown_value = Array.from(
-          new Set([...Object.keys(data.branch_data), ...data.current_projects])
-        ).filter(Boolean);
+        $scope.projectsPresentInCurrentWorkspace =
+          data.currentWorkspaceProjects;
+        $scope.projectsPresentInData = data.projectsDetailList;
         if (
-          $scope.project_dropdown_value.length === 1 ||
+          $scope.projectsPresentInCurrentWorkspace.length === 1 ||
           !$scope.currentProject
         ) {
-          $scope.currentProject = $scope.project_dropdown_value[0];
+          $scope.currentProject = $scope.projectsPresentInCurrentWorkspace[0];
         }
         // initi variable
         initializedAppVariable();
@@ -68,6 +69,16 @@ app.controller("customersCtrl", function ($scope, $http) {
     $scope.$apply();
   });
 
+  /* Disable if current project not selected from the current workspace */
+  $scope.selectProject = function (data) {
+    if (!$scope.projectsPresentInCurrentWorkspace.includes(data)) {
+      $scope.disableAllAction = true;
+      $scope.projectNotPresentError = true;
+    } else {
+      $scope.disableAllAction = false;
+      $scope.projectNotPresentError = false;
+    }
+  };
   $scope.startRefreshing = function () {
     sendMessageToExtension("refresh_data", {
       currentProject: $scope.currentProject,
@@ -122,10 +133,14 @@ app.controller("customersCtrl", function ($scope, $http) {
   // add section logic
   $scope.showAddModal = function () {
     $scope.showAddSection = !$scope.showAddSection;
-    if ($scope.project_dropdown_value.length === 1) {
-      $scope.addFormObject.project_name = $scope.project_dropdown_value[0];
+    if ($scope.projectsPresentInCurrentWorkspace.length === 1) {
+      $scope.addFormObject.project_name =
+        $scope.projectsPresentInCurrentWorkspace[0];
     } else {
-      $scope.addFormObject.project_name = $scope.currentProject;
+      $scope.addFormObject.project_name =
+        $scope.projectsPresentInCurrentWorkspace.includes($scope.currentProject)
+          ? $scope.currentProject
+          : $scope.projectsPresentInCurrentWorkspace[0];
     }
     $scope.add_project_details_inputs = false;
   };
@@ -308,16 +323,14 @@ app.controller("customersCtrl", function ($scope, $http) {
     // add section logic
     $scope.showAddSection = false;
     $scope.addFormObject = {
-      project_name: "",
+      project_name: $scope.projectsPresentInCurrentWorkspace[0],
       parent_branch: "",
       child_branch: "",
       id: new Date().getTime(),
       is_is_checked: false,
     };
-
     //search
     $scope.searchText = "";
-    $scope.stashError = false;
   };
 });
 function sendMessageToExtension(action, data) {

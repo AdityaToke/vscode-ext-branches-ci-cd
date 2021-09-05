@@ -1,11 +1,6 @@
-*********** UI ************
+*********** Fixes ************
 
-5. check its handling in the multiple workspace
-when checking multiple workspace we
-need to handle the test cases
-of showing project or all list of projects data added
-at that time we can say
-current project is not present in the current workspace.
+
 
 _________________________NOT ABLE TO REPRODUCE AGAIN_____________________________
 
@@ -15,6 +10,13 @@ we are 44 commit behind but its giving 43 commit
 it may be because of local branch is not up to date try to compare it with origin.
 
 _______________________FIXED___________________________________________________________
+
+5. check its handling in the multiple workspace
+when checking multiple workspace we
+need to handle the test cases
+of showing project or all list of projects data added
+at that time we can say
+current project is not present in the current workspace. (Fixed)
 
 21. disable select your project dropdown when performing refresh action.
 also check for other actions

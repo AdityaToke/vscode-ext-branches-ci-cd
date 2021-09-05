@@ -45,6 +45,16 @@ export function activate(context: vscode.ExtensionContext) {
           receiveMessage();
           let ext_data: IBaseDataStructure | undefined =
             globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
+          if (ext_data) {
+            const currentWorkspaceProjects =
+              vscode.workspace?.workspaceFolders?.map((x) => x.name);
+            const projectsDetailList = Object.keys(ext_data.branch_data);
+            ext_data.currentWorkspaceProjects = <string[]>(
+              currentWorkspaceProjects
+            );
+            ext_data.projectsDetailList = projectsDetailList;
+            updateApplicationData(ext_data);
+          }
           if (!ext_data) {
             globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY, "");
             updateApplicationData(
