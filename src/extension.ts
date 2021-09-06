@@ -225,7 +225,8 @@ async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
   const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git status`;
   log(LogsTypeEnum.INFO, "changesIsStashed", "command executed is - ", cmd);
   const { stdout } = await exec(cmd);
-  if (stdout.toLowerCase().includes("changes not staged for commit")) {
+  if (stdout.toLowerCase().includes("changes not staged for commit")
+  || stdout.toLowerCase().includes("changes to be committed")) {
     log(
       LogsTypeEnum.INFO,
       "changesIsStashed",
@@ -258,6 +259,15 @@ async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
             "sending start fixing conflicts action to extension"
           );
           sendMessage(SendActionEnum.START_FIXING_CONFLICTS, data);
+        } else {
+          if (data.from === "add") {
+            log(
+              LogsTypeEnum.INFO,
+              "changesIsStashed",
+              "sending start add branch action to extension"
+            );
+            sendMessage(SendActionEnum.START_ADDING, data);
+          }
         }
       }
     }

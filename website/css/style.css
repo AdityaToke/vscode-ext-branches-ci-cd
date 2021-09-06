@@ -230,7 +230,6 @@ table {
 
 .logsSection p {
   word-break: break-word;
-  white-space: nowrap;
 }
 
 input.search_input_tag:disabled {

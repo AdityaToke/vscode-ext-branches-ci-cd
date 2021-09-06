@@ -10,6 +10,9 @@ app.controller("customersCtrl", function ($scope, $http) {
     const { action, data } = event.data;
 
     switch (action) {
+      case "start_adding":
+        $scope.startAddingData();
+        break;
       case "logs":
         $scope.logsInfo = data;
         break;
@@ -148,6 +151,14 @@ app.controller("customersCtrl", function ($scope, $http) {
     resetAddSectionValue();
   };
   $scope.addBranch = function () {
+    $scope.disableAllAction = true;
+    sendMessageToExtension("is_stash", {
+      currentProject: $scope.currentProject,
+      from: "add",
+    });
+  };
+
+  $scope.startAddingData = function () {
     $scope.add_project_details_button = true;
     sendMessageToExtension("add_data", {
       ...$scope.addFormObject,

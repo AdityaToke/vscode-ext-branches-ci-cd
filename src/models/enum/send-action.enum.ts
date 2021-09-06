@@ -7,4 +7,5 @@ export enum SendActionEnum {
   START_REFRESHING = "start_refreshing",
   START_FIXING_CONFLICTS = "start_fixing_conflicts",
   LOGS = "logs",
+  START_ADDING = "start_adding",
 }
