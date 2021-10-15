@@ -156,7 +156,7 @@ async function resolveConflicts(data: any) {
     "cd " +
     projectDetailsTemp?.uri.fsPath +
     ` && git checkout ${data.parent_branch} && git pull && git checkout ${data.child_branch} && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
-  log(LogsTypeEnum.INFO, "resolveConflicts", "command executed is - ", cmd);
+  log(LogsTypeEnum.COMMAND, "resolveConflicts", "command executed is - ", cmd);
   try {
     await exec(cmd);
     // TODO: need to find logic on if error is not thorwn in merge conflicts.
@@ -174,7 +174,7 @@ async function resolveConflicts(data: any) {
           projectDetailsTemp?.uri.fsPath +
           ` && git diff --name-only --diff-filter=U`;
         log(
-          LogsTypeEnum.INFO,
+          LogsTypeEnum.COMMAND,
           "resolveConflicts",
           "command executed is - ",
           cmd
@@ -223,7 +223,7 @@ async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
   });
   const projectDetailsTemp = searchProject(data.currentProject);
   const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git status`;
-  log(LogsTypeEnum.INFO, "changesIsStashed", "command executed is - ", cmd);
+  log(LogsTypeEnum.COMMAND, "changesIsStashed", "command executed is - ", cmd);
   const { stdout } = await exec(cmd);
   if (stdout.toLowerCase().includes("changes not staged for commit")
   || stdout.toLowerCase().includes("changes to be committed")) {
@@ -338,7 +338,7 @@ async function mergeData(data: any) {
         "cd " +
         projectDetailsTemp?.uri.fsPath +
         ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
-      log(LogsTypeEnum.INFO, "mergeData", "command executed is - ", cmd);
+      log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
 
       const { stdout } = await exec(cmd);
       if (stdout) {
@@ -386,7 +386,7 @@ async function mergeData(data: any) {
         // again add the git push command
         // and after that we will add it to up to date.
         const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
-        log(LogsTypeEnum.INFO, "mergeData", "command executed is - ", cmd);
+        log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
 
         await exec(cmd);
         // add it in up to date
@@ -424,7 +424,7 @@ async function getTheMergeConflictDiff(
     "cd " +
     projectPath +
     " && git diff --name-only --diff-filter=U && git merge --abort";
-  log(LogsTypeEnum.INFO, "getTheMergeConflictDiff", "cmd to be called", cmd);
+  log(LogsTypeEnum.COMMAND, "getTheMergeConflictDiff", "cmd to be called", cmd);
   const { stdout } = await exec(cmd);
   status = "Conflicted Files - ";
   const conflictsFilesList = stdout.split("\n").filter(Boolean);
@@ -493,7 +493,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
       "cd " +
       projectDetailsTemp?.uri.fsPath +
       ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
-    log(LogsTypeEnum.INFO, "verifyBranch", "command executed is - ", cmd);
+    log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
 
     const { stdout } = await exec(cmd);
     log(
@@ -554,7 +554,7 @@ async function addAndRefreshDataToStorage(
       projectDetailsTemp?.uri.fsPath +
       ` && git rev-list --right-only --count origin/${dataToAdd.child_branch}...origin/${dataToAdd.parent_branch}`;
     log(
-      LogsTypeEnum.INFO,
+      LogsTypeEnum.COMMAND,
       "addAndRefreshDataToStorage",
       "command executed is - ",
       cmd
@@ -588,7 +588,7 @@ async function addAndRefreshDataToStorage(
           ` && git checkout ${dataToAdd.parent_branch} && git pull && git checkout ${dataToAdd.child_branch} && git pull && git add . && git merge ${dataToAdd.parent_branch} --no-edit --no-verify`;
 
         log(
-          LogsTypeEnum.INFO,
+          LogsTypeEnum.COMMAND,
           "addAndRefreshDataToStorage",
           "command executed is - ",
           cmd

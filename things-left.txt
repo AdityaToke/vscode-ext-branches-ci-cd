@@ -1,6 +1,17 @@
+*********** future plans ************
+
+23. what we can do is fetch all the branches present in local and on remote.
+24. we need to be more specifc what is up to date so flip it with child branch.
+25. multiple dropdown can be more confusing
+26. also we need to show is the brach ahead or behind parent branch.
+27. also check stale in gitlab.
+28. we should keep filter in logs based on type.
+30. we will also add the copy button in it.
+31. also check the screenshot taken issue found.
+
 *********** Fixes ************
 
-
+23. if we can give flag on during merge conflicts wheather to open files or not.
 
 _________________________NOT ABLE TO REPRODUCE AGAIN_____________________________
 
@@ -55,6 +66,7 @@ and then perform the action. (fixed)
 7. auto refesh, refresh and checking of branch on when the app is open for that particular project (Fixed).
 11. while adding branch we also check Merge conflicts as we have the logic now. (Fixed)
 13. we should show message while refreshing (Fixed)
+29. cmd --> chnge log to debug. (fixed)
 
 ********** ADVANCED TEST CASE **********
 
