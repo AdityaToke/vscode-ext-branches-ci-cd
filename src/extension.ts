@@ -62,13 +62,19 @@ export function activate(context: vscode.ExtensionContext) {
             );
             ext_data = baseDataStructure(vscode.workspace.name ?? "");
           }
-          currentPanel.webview.html = getWebviewContent();
-          sendMessage(SendActionEnum.APPLICATION_DATA, {
-            ...ext_data,
-            current_projects: vscode.workspace?.workspaceFolders?.map(
-              (x) => x.name
-            ),
-          });
+
+          if (vscode.workspace?.workspaceFolders) {
+            const currentProject = vscode.workspace?.workspaceFolders[0].name;
+
+            if (!Object.keys(ext_data.branch_data).includes(currentProject)) {
+              ext_data = addProjectData(currentProject, ext_data);
+            }
+            currentPanel.webview.html = getWebviewContent();
+            sendMessage(SendActionEnum.APPLICATION_DATA, {
+              ...ext_data,
+              current_projects: currentProject,
+            });
+          }
         }
       } catch (error) {
         log(LogsTypeEnum.ERROR, "activate", "Error", error);
@@ -80,6 +86,23 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   globalContext.subscriptions.push(disposable);
+}
+
+function addProjectData(currentProject: string, applicationData: IBaseDataStructure ): IBaseDataStructure  {
+  const tempBranchData = {
+    [StatusIdentifierEnum.MERGING]: <any>[],
+    [StatusIdentifierEnum.MERGE_CONFLICTS]: <any>[],
+    [StatusIdentifierEnum.READY_FOR_MERGE]: <any>[],
+    [StatusIdentifierEnum.UP_TO_DATE]: <any>[],
+  };
+
+  log(
+    LogsTypeEnum.INFO,
+    "addAndRefreshDataToStorage",
+    "fresh data adding to project"
+  );
+  applicationData.branch_data[currentProject] = tempBranchData;
+  return applicationData;
 }
 function receiveMessage() {
   log(LogsTypeEnum.INFO, "receiveMessage", "called successfully");
@@ -225,8 +248,10 @@ async function changesIsStashed(data: any, sendReturnResponseToWeb = false) {
   const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git status`;
   log(LogsTypeEnum.COMMAND, "changesIsStashed", "command executed is - ", cmd);
   const { stdout } = await exec(cmd);
-  if (stdout.toLowerCase().includes("changes not staged for commit")
-  || stdout.toLowerCase().includes("changes to be committed")) {
+  if (
+    stdout.toLowerCase().includes("changes not staged for commit") ||
+    stdout.toLowerCase().includes("changes to be committed")
+  ) {
     log(
       LogsTypeEnum.INFO,
       "changesIsStashed",
@@ -495,12 +520,12 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
       ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
     log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
 
-    const { stdout } = await exec(cmd);
+    const { stdout, stderr } = await exec(cmd);
     log(
       LogsTypeEnum.INFO,
       "verifyProject",
       "output after the branch verification",
-      stdout
+      {stdout, stderr}
     );
     if (stdout) {
       sendMessage(SendActionEnum.VERIFY_BRANCH, {
@@ -678,32 +703,6 @@ async function addAndRefreshDataToStorage(
             id: new Date().getTime(),
           }
         );
-      } else {
-        const tempBranchData = {
-          [StatusIdentifierEnum.MERGING]: <any>[],
-          [StatusIdentifierEnum.MERGE_CONFLICTS]: <any>[],
-          [StatusIdentifierEnum.READY_FOR_MERGE]: <any>[],
-          [StatusIdentifierEnum.UP_TO_DATE]: <any>[],
-        };
-        tempBranchData[currentStatus.id].push({
-          is_checked: false,
-          parent_branch: dataToAdd.parent_branch,
-          child_branch: dataToAdd.child_branch,
-          status: currentStatus.status,
-        });
-        log(
-          LogsTypeEnum.INFO,
-          "addAndRefreshDataToStorage",
-          "fresh data adding to project",
-          {
-            is_checked: false,
-            parent_branch: dataToAdd.parent_branch,
-            child_branch: dataToAdd.child_branch,
-            status: currentStatus.status,
-          }
-        );
-        tempApplicationData.branch_data[dataToAdd.project_name] =
-          tempBranchData;
       }
       if (refresh) {
         refreshApplicationData = JSON.parse(
