@@ -81,6 +81,9 @@ app.controller("customersCtrl", function ($scope, $http) {
       $scope.disableAllAction = false;
       $scope.projectNotPresentError = false;
     }
+    if ($scope.showAddSection) {
+      $scope.closeAddSection();
+    }
   };
   $scope.startRefreshing = function () {
     sendMessageToExtension("refresh_data", {
@@ -152,6 +155,7 @@ app.controller("customersCtrl", function ($scope, $http) {
   };
   $scope.addBranch = function () {
     $scope.disableAllAction = true;
+    $scope.addFormObject.project_name = $scope.currentProject;
     sendMessageToExtension("is_stash", {
       currentProject: $scope.currentProject,
       from: "add",
@@ -200,7 +204,7 @@ app.controller("customersCtrl", function ($scope, $http) {
     setAddDetailsButton();
   };
 
-  $scope.copyClipBoard = function() {
+  $scope.copyClipBoard = function () {
     navigator.clipboard.writeText(JSON.stringify($scope.logsInfo));
   };
   /* Checkbox */
@@ -353,4 +357,4 @@ function sendMessageToExtension(action, data) {
     action,
     data,
   });
-};
+}

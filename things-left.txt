@@ -1,7 +1,6 @@
 *********** future plans ************
 
 23. what we can do is fetch all the branches present in local and on remote.
-25. multiple dropdown can be more confusing
 26. also we need to show is the brach ahead or behind parent branch.
 27. also check stale in gitlab.
 28. we should keep filter in logs based on type. (do we need it, as logs are just creating bug with exact issue)
@@ -20,6 +19,7 @@ it may be because of local branch is not up to date try to compare it with origi
 
 _______________________FIXED___________________________________________________________
 
+25. multiple dropdown can be more confusing added 
 24. we need to be more specifc what is up to date so flip it with child branch. 
 30. we will also add the copy button in it.
 

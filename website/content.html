@@ -83,22 +83,6 @@
       <i class="fa fa-times cross_icon" ng-click="closeAddSection()"></i>
     </header>
     <div class="add_section_tag_content">
-      <div>
-        <span class="dropdown_block">
-          <label for="projectExistingSelect">Select your projects:</label>
-          <label class="text-sm"
-            >(contains only list of projects present in current
-            workspace)</label
-          >
-          <select
-            name="projectExistingSelect"
-            class="dropdown_input project_dropdown"
-            ng-options="projectName for projectName in projectsPresentInCurrentWorkspace"
-            ng-change="setProjectName()"
-            ng-model="addFormObject.project_name"
-          ></select>
-        </span>
-      </div>
       <div class="branches_input_block">
         <div class="parent_block dropdown_block">
           <label for="parentBranch">Parent Branch:</label>
@@ -265,7 +249,9 @@
     </section>
   </article>
   <article ng-if="showLogs" class="logsSection">
-    <p class="header"><i ng-click="copyClipBoard()" class="fa fa-clipboard"></i></p>
+    <p class="header">
+      <i ng-click="copyClipBoard()" class="fa fa-clipboard"></i>
+    </p>
     <p ng-repeat="logs in logsInfo">{{logs}}</p>
   </article>
 </div>
