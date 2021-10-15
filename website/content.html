@@ -265,6 +265,7 @@
     </section>
   </article>
   <article ng-if="showLogs" class="logsSection">
+    <p class="header"><i ng-click="copyClipBoard()" class="fa fa-clipboard"></i></p>
     <p ng-repeat="logs in logsInfo">{{logs}}</p>
   </article>
 </div>

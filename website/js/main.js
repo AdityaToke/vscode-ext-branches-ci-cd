@@ -199,6 +199,10 @@ app.controller("customersCtrl", function ($scope, $http) {
       : true;
     setAddDetailsButton();
   };
+
+  $scope.copyClipBoard = function() {
+    navigator.clipboard.writeText(JSON.stringify($scope.logsInfo));
+  };
   /* Checkbox */
   $scope.checkboxHasBeenCalled = function (sectionName, selectedBranchDetails) {
     if (selectedBranchDetails.is_checked) {
@@ -349,4 +353,4 @@ function sendMessageToExtension(action, data) {
     action,
     data,
   });
-}
+};

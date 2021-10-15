@@ -391,7 +391,7 @@ async function mergeData(data: any) {
         await exec(cmd);
         // add it in up to date
         element.is_checked = false;
-        element.status = "The branch is up to date.";
+        element.status = "The child branch is up to date.";
         tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
           element
         );
@@ -648,7 +648,7 @@ async function addAndRefreshDataToStorage(
       );
       currentStatus = {
         id: StatusIdentifierEnum.UP_TO_DATE,
-        status: "The branch is up to date.",
+        status: "The child branch is up to date.",
       };
     }
     if (tempApplicationData) {
