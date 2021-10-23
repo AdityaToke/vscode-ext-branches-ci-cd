@@ -19,6 +19,7 @@ it may be because of local branch is not up to date try to compare it with origi
 
 _______________________FIXED___________________________________________________________
 
+32. if branch is not present then revert back to parent branch and abort merge.
 25. multiple dropdown can be more confusing added 
 24. we need to be more specifc what is up to date so flip it with child branch. 
 30. we will also add the copy button in it.

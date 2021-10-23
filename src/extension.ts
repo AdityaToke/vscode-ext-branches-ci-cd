@@ -87,8 +87,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   globalContext.subscriptions.push(disposable);
 }
-
-function addProjectData(currentProject: string, applicationData: IBaseDataStructure ): IBaseDataStructure  {
+function addProjectData(
+  currentProject: string,
+  applicationData: IBaseDataStructure
+): IBaseDataStructure {
   const tempBranchData = {
     [StatusIdentifierEnum.MERGING]: <any>[],
     [StatusIdentifierEnum.MERGE_CONFLICTS]: <any>[],
@@ -128,7 +130,7 @@ function receiveMessage() {
           return;
 
         case ReceiveAction.VERIFY_BRANCH:
-          verifyBranch(data);
+          verifyingBranch(data);
           return;
 
         case ReceiveAction.VERIFY_PROJECT:
@@ -163,7 +165,6 @@ function receiveMessage() {
     globalContext.subscriptions
   );
 }
-
 function sendLogsToExtension() {
   log(LogsTypeEnum.INFO, "sendLogsToExtension", "called successfully");
   const data = fs.readFileSync(
@@ -358,6 +359,7 @@ async function mergeData(data: any) {
           data.currentProject
         ].ready_to_merge.filter((x) => x.id !== element.id);
     }
+    verifyBranchBeforeMerging(data, projectDetailsTemp);
     try {
       const cmd =
         "cd " +
@@ -434,6 +436,82 @@ async function mergeData(data: any) {
     ...tempApplicationData,
     current_projects: vscode.workspace?.workspaceFolders?.map((x) => x.name),
   });
+};
+async function verifyBranchBeforeMerging(data: any, projectDetailsTemp: any) {
+  log(
+    LogsTypeEnum.INFO,
+    "verifyBranchBeforeMerging",
+    "verifying the branches before merging",
+    { data, projectDetailsTemp }
+  );
+  const tempData = [];
+  for (let index = 0; index < data.items.length; index++) {
+    const element = data.items[index];
+    try {
+      const stdout = await verifyBranch({
+        branch_name: element.parent_branch,
+        project_name: data.currentProject,
+        project_details: projectDetailsTemp,
+        verifyFor: "child"
+      }); 
+      const stdout2 = await verifyBranch({
+        branch_name: element.child_branch,
+        project_name: data.currentProject,
+        project_details: projectDetailsTemp,
+        verifyFor: "child"
+      });
+      if (stdout && stdout2 ) {
+        tempData.push(element);
+      } else {
+        showMessageOnScreen("Removing branch as it has been deleted from the origin");
+      }
+    } catch (error) {
+      log(
+        LogsTypeEnum.ERROR,
+        "verifyBranchBeforeMerging",
+        "error occured means the branch wont be there",
+        { data, projectDetailsTemp, tempData }
+      );
+      showMessageOnScreen("Removing branch as it has been deleted from the origin");
+    }
+  }
+}
+async function verifyBranch(verifyBranchObj: IVerifyBranch) {
+  log(
+    LogsTypeEnum.INFO,
+    "verifyBranch",
+    "called successfully",
+    verifyBranchObj
+  );
+  try {
+    let projectDetailsTemp: vscode.WorkspaceFolder | undefined =
+      verifyBranchObj.project_details;
+    if (!projectDetailsTemp) {
+      projectDetailsTemp = searchProject(verifyBranchObj.project_name);
+    }
+    log(
+      LogsTypeEnum.INFO,
+      "verifyBranch",
+      "project details info",
+      projectDetailsTemp
+    );
+    const cmd =
+      "cd " +
+      projectDetailsTemp?.uri.fsPath +
+      ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
+    log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
+
+    const { stdout, stderr } = await exec(cmd);
+    log(
+      LogsTypeEnum.INFO,
+      "verifyBranch",
+      "output after the branch verification",
+      { stdout, stderr }
+    );
+    return stdout;
+  } catch (error) {
+      throw new Error(error);
+  }
 }
 async function getTheMergeConflictDiff(
   projectPath: string | undefined
@@ -495,38 +573,9 @@ function searchProject(projectName: string) {
     (x) => x.name.toLowerCase() === projectName.toLowerCase()
   );
 }
-async function verifyBranch(verifyBranchObj: IVerifyBranch) {
-  log(
-    LogsTypeEnum.INFO,
-    "verifyBranch",
-    "called successfully",
-    verifyBranchObj
-  );
+async function verifyingBranch(verifyBranchObj: IVerifyBranch) {
   try {
-    let projectDetailsTemp: vscode.WorkspaceFolder | undefined =
-      verifyBranchObj.project_details;
-    if (!projectDetailsTemp) {
-      projectDetailsTemp = searchProject(verifyBranchObj.project_name);
-    }
-    log(
-      LogsTypeEnum.INFO,
-      "verifyProject",
-      "project details info",
-      projectDetailsTemp
-    );
-    const cmd =
-      "cd " +
-      projectDetailsTemp?.uri.fsPath +
-      ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
-    log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
-
-    const { stdout, stderr } = await exec(cmd);
-    log(
-      LogsTypeEnum.INFO,
-      "verifyProject",
-      "output after the branch verification",
-      {stdout, stderr}
-    );
+    const stdout = await verifyBranch(verifyBranchObj);
     if (stdout) {
       sendMessage(SendActionEnum.VERIFY_BRANCH, {
         verifiedFor: verifyBranchObj.verifyFor,
@@ -541,7 +590,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
   } catch (error) {
     log(
       LogsTypeEnum.ERROR,
-      "verifyProject",
+      "verifyingBranch",
       "error found, sending verify branch action",
       { error, verifiedFor: verifyBranchObj.verifyFor }
     );
@@ -551,6 +600,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     });
   }
 }
+
 async function addAndRefreshDataToStorage(
   dataToAdd: any,
   refresh: boolean = false,
@@ -607,18 +657,6 @@ async function addAndRefreshDataToStorage(
       // this will be based on the condition we will
       // wheather it has merge conflicts
       try {
-        const cmd =
-          "cd " +
-          projectDetailsTemp?.uri.fsPath +
-          ` && git checkout ${dataToAdd.parent_branch} && git pull && git checkout ${dataToAdd.child_branch} && git pull && git add . && git merge ${dataToAdd.parent_branch} --no-edit --no-verify`;
-
-        log(
-          LogsTypeEnum.COMMAND,
-          "addAndRefreshDataToStorage",
-          "command executed is - ",
-          cmd
-        );
-        await exec(cmd);
         currentStatus = {
           id: StatusIdentifierEnum.READY_FOR_MERGE,
           status: `The source branch is ${numberOfCommits} commits behind the target branch`,
