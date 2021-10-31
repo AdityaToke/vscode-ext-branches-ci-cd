@@ -4,6 +4,9 @@
 	"publisher": "AdityaToke",
 	"description": "",
 	"version": "0.0.1",
+	"repository": {
+		"url": "https://github.com/AdityaToke/vscode-ext-branches-ci-cd"
+	},
 	"engines": {
 		"vscode": "^1.55.0"
 	},
