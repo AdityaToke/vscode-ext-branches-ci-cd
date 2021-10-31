@@ -1,56 +1,59 @@
+
+![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+
+
+# Git Branch CI and CD
+
+Keep your branches up to date, by daily downmerging your latest parent branch on finger tips.
+
+Git Branch CI/CD aims to bring the git branches management system inside with the simplest and the most convenient way.
+
+
+
+
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
+ - Handling and Easily switch between multiple projects.
+ - Search branches in your dashboard.
+ - Verify branches before adding to your dashboard.
+ - Distributes the branch into 4 states `Merging`, `Ready to Merge`, `Up to Date`, `Merge conflicts`, which help to keep track of the branches required.
+ - Multiple merging of branches at same time.
+ - Also provide files list which has merge conflicts.
+ - A small sweet refresh button helps to refresh the branches and its states.
+ - An open log system which help to raise bugs.
 
 
 
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
+## Commands
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+Press F1 and type or select below commands to run.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+* Git: Branch CI/CD
 
-## Working with Markdown
+## Usage
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+#### How to add branch?
+![Add Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/add.gif)
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+#### How to refresh your git dashboard?
+![Refresh Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/refresh.gif)
 
-### For more information
+#### How to down merge parent branch in your child branch?
+![Merge Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge.gif)
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+#### How to resolve merge conflicts branches?
+![Merge conflicts](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge-conflicts.gif)
+## 🚀 About Me
+A Neird, who like to ease the process and his work, so that he gets time to sleep.
+Not found tool or any vscode git extension to do it with such ease, so wrote it myself.
 
-**Enjoy!**
+
+## Change logs
+
+#### 0.0.1
+- Initial release contains all the basic features.
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)

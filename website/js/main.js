@@ -36,7 +36,7 @@ app.controller("customersCtrl", function ($scope, $http) {
         $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
         $scope.projectsPresentInCurrentWorkspace =
           data.currentWorkspaceProjects;
-        $scope.projectsPresentInData = data.projectsDetailList;
+        $scope.projectsPresentInData = data.projectsDetailList.filter(Boolean);
         if (
           $scope.projectsPresentInCurrentWorkspace.length === 1 ||
           !$scope.currentProject
