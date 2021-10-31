@@ -498,7 +498,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     const cmd =
       "cd " +
       projectDetailsTemp?.uri.fsPath +
-      ` && git ls-remote origin ${verifyBranchObj.branch_name}`;
+      ` && git rev-parse --verify ${verifyBranchObj.branch_name}`;
     log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
 
     const { stdout, stderr } = await exec(cmd);
