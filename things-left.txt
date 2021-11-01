@@ -5,7 +5,7 @@
 27. also check stale in gitlab.
 28. we should keep filter in logs based on type. (do we need it, as logs are just creating bug with exact issue)
 31. also check the screenshot taken issue found.
-32.
+
 *********** Fixes ************
 
 23. if we can give flag on during merge conflicts wheather to open files or not.
