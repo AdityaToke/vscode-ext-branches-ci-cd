@@ -7,6 +7,7 @@
 31. also check the screenshot taken issue found.
 32. react vs angular jhs adding it
 
+33. asdadad testing asdadasd
 *********** Fixes ************
 
 23. if we can give flag on during merge conflicts wheather to open files or not.
