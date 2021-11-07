@@ -1,5 +1,6 @@
 
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Logo](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/ext-icon.png))
+
 
 
 # Git Branch CI and CD
@@ -43,9 +44,21 @@ Press F1 and type or select below commands to run.
 
 #### How to resolve merge conflicts branches?
 ![Merge conflicts](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge-conflicts.gif)
+
+
 ## 🚀 About Me
 A Neird, who like to ease the process and his work, so that he gets time to sleep.
 Not found tool or any vscode git extension to do it with such ease, so wrote it myself.
+
+
+## How to raise 
+
+Contributions are always welcome!
+
+See [contributing.md](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/contributing.md) for ways to get started.
+
+Please adhere to this project's [Code of conduct](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/code_of_conduct.md).
+
 
 
 ## Change logs
@@ -56,4 +69,4 @@ Not found tool or any vscode git extension to do it with such ease, so wrote it 
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/LICENSE)
