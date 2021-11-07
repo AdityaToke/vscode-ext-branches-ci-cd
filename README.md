@@ -1,6 +1,6 @@
 
 ![Logo](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/ext-icon.png?raw=true)
-# Git Branch CI and CD
+# Git Branch CI/CD
 
 Keep your branches up to date, by daily downmerging your latest parent branch on finger tips.
 
