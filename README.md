@@ -63,6 +63,8 @@ Please adhere to this project's [Code of conduct](https://github.com/AdityaToke/
 #### 0.0.1
 - Initial release contains all the basic features.
 
+#### 0.0.2
+- Updated the extension name for easy searching in marketplace.
 
 ## License
 
