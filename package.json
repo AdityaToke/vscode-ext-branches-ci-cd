@@ -1,13 +1,23 @@
 {
 	"name": "git-branches-ci-cd",
-	"displayName": "Git: Branch CI/CD",
+	"displayName": "Git Branch CI/CD",
 	"publisher": "AdityaToke21",
 	"description": "A Git extension to keep your parent and child branch in sync without any hassle.",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"icon": "readme-animations/ext-icon.png",
+	"author": {
+		"name": "Aditya Toke",
+		"email": "adityatoke21@gmail.com",
+		"url": "https://www.linkedin.com/in/aditya-toke/"
+	},
 	"repository": {
+		"type": "git",
 		"url": "https://github.com/AdityaToke/vscode-ext-branches-ci-cd"
 	},
+	"bugs": {
+		"url": "https://github.com/AdityaToke/vscode-ext-branches-ci-cd/issues",
+		"email": "adityatoke21@gmail.com"
+	  },
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -22,7 +32,7 @@
 		"commands": [
 			{
 				"command": "git-branches-ci-cd.initBranchTask",
-				"title": "Git: Branch CI/CD"
+				"title": "Git Branch CI/CD"
 			}
 		]
 	},
