@@ -4,7 +4,7 @@
 	"publisher": "AdityaToke",
 	"description": "A Git extension to keep your parent and child branch in sync without any hassle.",
 	"version": "0.0.1",
-	"icon": "https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/ext-icon.png",
+	"icon": "readme-animations/ext-icon.png",
 	"repository": {
 		"url": "https://github.com/AdityaToke/vscode-ext-branches-ci-cd"
 	},
