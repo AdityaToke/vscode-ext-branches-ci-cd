@@ -1,5 +1,5 @@
 
-![Logo](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/ext-icon.png)
+![Logo](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/ext-icon.png?raw=true)
 # Git Branch CI and CD
 
 Keep your branches up to date, by daily downmerging your latest parent branch on finger tips.
@@ -31,16 +31,16 @@ Press F1 and type or select below commands to run.
 ## Usage
 
 #### How to add branch?
-![Add Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/add.gif)
+![Add Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/add.gif?raw=true)
 
 #### How to refresh your git dashboard?
-![Refresh Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/refresh.gif)
+![Refresh Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/refresh.gif?raw=true)
 
 #### How to down merge parent branch in your child branch?
-![Merge Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge.gif)
+![Merge Branch](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge.gif?raw=true)
 
 #### How to resolve merge conflicts branches?
-![Merge conflicts](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge-conflicts.gif)
+![Merge conflicts](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/readme-animations/merge-conflicts.gif?raw=true)
 
 
 ## 🚀 About Me
