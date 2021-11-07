@@ -47,7 +47,7 @@ Press F1 and type or select below commands to run.
 
 
 ## 🚀 About Me
-A Neird, who like to ease the process and his work, so that he gets time to sleep.
+A [Neird](https://www.linkedin.com/in/aditya-toke/), who like to ease the process and his work, so that he gets time to sleep.
 Not found tool or any vscode git extension to do it with such ease, so wrote it myself.
 
 
