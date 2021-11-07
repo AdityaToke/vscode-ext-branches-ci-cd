@@ -498,7 +498,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     const cmd =
       "cd " +
       projectDetailsTemp?.uri.fsPath +
-      ` && git rev-parse --verify ${verifyBranchObj.branch_name}`;
+      ` && git rev-parse --verify origin/${verifyBranchObj.branch_name}`;
     log(LogsTypeEnum.COMMAND, "verifyBranch", "command executed is - ", cmd);
 
     const { stdout, stderr } = await exec(cmd);
@@ -627,7 +627,7 @@ async function addAndRefreshDataToStorage(
     const cmd =
       "cd " +
       projectDetailsTemp?.uri.fsPath +
-      ` && git rev-list --right-only --count origin/${dataToAdd.child_branch}...origin/${dataToAdd.parent_branch}`;
+      ` && git rev-list --left-only --count origin/${dataToAdd.parent_branch}...origin/${dataToAdd.child_branch}`;
     log(
       LogsTypeEnum.COMMAND,
       "addAndRefreshDataToStorage",
