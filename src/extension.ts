@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.window.showInformationMessage("Starting Git Branches CI/CD");
           currentPanel = vscode.window.createWebviewPanel(
             "parentWebViewScreen",
-            "Git: Branch CI/CD",
+            "Git Branch CI/CD",
             vscode.ViewColumn.One,
             {
               enableScripts: true,

@@ -26,7 +26,7 @@ Git Branch CI/CD aims to bring the git branches management system inside with th
 
 Press F1 and type or select below commands to run.
 
-* Git: Branch CI/CD
+* Git Branch CI/CD
 
 ## Usage
 
