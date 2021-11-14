@@ -3,7 +3,7 @@
 	"displayName": "Git Branch CI/CD",
 	"publisher": "AdityaToke21",
 	"description": "A Git extension to keep your parent and child branch in sync without any hassle.",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"icon": "readme-animations/ext-icon.png",
 	"author": {
 		"name": "Aditya Toke",
