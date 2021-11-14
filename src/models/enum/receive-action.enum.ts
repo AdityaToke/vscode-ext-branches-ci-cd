@@ -9,4 +9,5 @@ export enum ReceiveAction {
   IS_STASH = "is_stash",
   RESOLVE_CONFLICTS = "resolve_conflicts",
   LOGS = "show_logs",
+  MERGEAll = "mergeAll"
 }

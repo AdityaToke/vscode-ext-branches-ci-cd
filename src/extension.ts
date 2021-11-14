@@ -62,7 +62,6 @@ export function activate(context: vscode.ExtensionContext) {
             );
             ext_data = baseDataStructure(vscode.workspace.name ?? "");
           }
-
           if (vscode.workspace?.workspaceFolders) {
             const currentProject = vscode.workspace?.workspaceFolders[0].name;
 
@@ -143,6 +142,10 @@ function receiveMessage() {
 
         case ReceiveAction.MERGE:
           mergeData(data);
+          return;
+
+        case ReceiveAction.MERGEAll:
+          mergeData(data, true);
           return;
 
         case ReceiveAction.REFRESH:
@@ -344,90 +347,121 @@ async function refreshData(data: any) {
     }
   }
 }
-async function mergeData(data: any) {
+async function mergeData(data: any, isMergeAll = false) {
   log(LogsTypeEnum.INFO, "mergeData", "called successfully", data);
   let projectDetailsTemp = searchProject(data.currentProject);
   const tempApplicationData: IBaseDataStructure | undefined =
     globalContext.globalState.get(GlobalDetails.PARENT_CACHE_KEY);
-  let element: IBranchDetails;
-  for (let index = 0; index < data.items.length; index++) {
-    element = data.items[index];
-    if (tempApplicationData) {
-      tempApplicationData.last_refreshed_on = new Date().toString();
-      tempApplicationData.branch_data[data.currentProject].ready_to_merge =
-        tempApplicationData.branch_data[
-          data.currentProject
-        ].ready_to_merge.filter((x) => x.id !== element.id);
+  if (tempApplicationData) {
+    if (isMergeAll) {
+      tempApplicationData.branch_data[data.currentProject].ready_to_merge = [];
+      tempApplicationData.branch_data[data.currentProject].merge_conflicts = [];
+      tempApplicationData.branch_data[data.currentProject].merging = [];
+      tempApplicationData.branch_data[data.currentProject].up_to_date = [];
     }
-    verifyBranchBeforeMerging(data, projectDetailsTemp);
-    try {
-      const cmd =
-        "cd " +
-        projectDetailsTemp?.uri.fsPath +
-        ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
-      log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
-
-      const { stdout } = await exec(cmd);
-      if (stdout) {
-        element.is_checked = false;
-        tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
-          element
-        );
-        log(
-          LogsTypeEnum.INFO,
-          "mergeData",
-          "added to up to date section",
-          element
-        );
+    let element: IBranchDetails;
+    for (let index = 0; index < data.items.length; index++) {
+      element = data.items[index];
+      tempApplicationData.last_refreshed_on = new Date().toString();
+      if (!isMergeAll) {
+        tempApplicationData.branch_data[data.currentProject].ready_to_merge =
+          tempApplicationData.branch_data[
+            data.currentProject
+          ].ready_to_merge.filter((x) => x.id !== element.id);
       }
-    } catch (error) {
-      log(
-        LogsTypeEnum.ERROR,
-        "mergeData",
-        "error found it can be merge conflict or push remaining",
-        error
-      );
-      if (error.stdout.toLowerCase().includes("automatic merge failed")) {
-        // before abort we will extract all the info using diff
-        // abort the git merge
-        element.status = await getTheMergeConflictDiff(
-          projectDetailsTemp?.uri.fsPath
-        );
-        // add it in merge conflicts
-        element.is_checked = false;
-        tempApplicationData?.branch_data[
-          data.currentProject
-        ].merge_conflicts.push(element);
+      verifyBranchBeforeMerging(data, projectDetailsTemp);
+      try {
+        const cmd =
+          "cd " +
+          projectDetailsTemp?.uri.fsPath +
+          ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
+        log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
+
+        const { stdout } = await exec(cmd);
+        if (stdout) {
+          element.is_checked = false;
+          tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
+            element
+          );
+          log(
+            LogsTypeEnum.INFO,
+            "mergeData",
+            "added to up to date section",
+            element
+          );
+        }
+      } catch (error) {
         log(
           LogsTypeEnum.ERROR,
           "mergeData",
-          "error found it is merge conflict",
-          element
+          "error found it can be merge conflict or push remaining",
+          error
         );
-      }
-      if (
-        error.stdout
-          .toLowerCase()
-          .includes('use "git push" to publish your local commits')
-      ) {
-        // again add the git push command
-        // and after that we will add it to up to date.
-        const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
-        log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
+        if (error.stdout.toLowerCase().includes("automatic merge failed")) {
+          // before abort we will extract all the info using diff
+          // abort the git merge
+          element.status = await getTheMergeConflictDiff(
+            projectDetailsTemp?.uri.fsPath
+          );
+          // add it in merge conflicts
+          element.is_checked = false;
+          tempApplicationData?.branch_data[
+            data.currentProject
+          ].merge_conflicts.push(element);
+          log(
+            LogsTypeEnum.ERROR,
+            "mergeData",
+            "error found it is merge conflict",
+            element
+          );
+        } else {
+          if (
+            error.stdout
+              .toLowerCase()
+              .includes('use "git push" to publish your local commits')
+          ) {
+            // again add the git push command
+            // and after that we will add it to up to date.
+            const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
+            log(
+              LogsTypeEnum.COMMAND,
+              "mergeData",
+              "command executed is - ",
+              cmd
+            );
 
-        await exec(cmd);
-        // add it in up to date
-        element.is_checked = false;
-        element.status = "The child branch is up to date.";
-        tempApplicationData?.branch_data[data.currentProject].up_to_date.push(
-          element
-        );
-        log(
-          LogsTypeEnum.INFO,
-          "mergeData",
-          "pushing local commits after the normal merge",
-          element
-        );
+            await exec(cmd);
+            // add it in up to date
+            element.is_checked = false;
+            element.status = "The child branch is up to date.";
+            tempApplicationData?.branch_data[
+              data.currentProject
+            ].up_to_date.push(element);
+            log(
+              LogsTypeEnum.INFO,
+              "mergeData",
+              "pushing local commits after the normal merge",
+              element
+            );
+          } else {
+            if (
+              error.stdout.toLowerCase().includes("your branch is up to date") &&
+              error.stdout.toLowerCase().includes("nothing to commit")
+            ) {
+              element.is_checked = false;
+              element.status = "The child branch is up to date.";
+              tempApplicationData?.branch_data[
+                data.currentProject
+              ].up_to_date.push(element);
+              log(
+                LogsTypeEnum.INFO,
+                "mergeData",
+                "branch is up to date already nothing to commit",
+                element
+              );
+            }
+          }
+        }
       }
     }
   }
@@ -436,7 +470,7 @@ async function mergeData(data: any) {
     ...tempApplicationData,
     current_projects: vscode.workspace?.workspaceFolders?.map((x) => x.name),
   });
-};
+}
 async function verifyBranchBeforeMerging(data: any, projectDetailsTemp: any) {
   log(
     LogsTypeEnum.INFO,
@@ -452,18 +486,20 @@ async function verifyBranchBeforeMerging(data: any, projectDetailsTemp: any) {
         branch_name: element.parent_branch,
         project_name: data.currentProject,
         project_details: projectDetailsTemp,
-        verifyFor: "child"
-      }); 
+        verifyFor: "child",
+      });
       const stdout2 = await verifyBranch({
         branch_name: element.child_branch,
         project_name: data.currentProject,
         project_details: projectDetailsTemp,
-        verifyFor: "child"
+        verifyFor: "child",
       });
-      if (stdout && stdout2 ) {
+      if (stdout && stdout2) {
         tempData.push(element);
       } else {
-        showMessageOnScreen("Removing branch as it has been deleted from the origin");
+        showMessageOnScreen(
+          "Removing branch as it has been deleted from the origin"
+        );
       }
     } catch (error) {
       log(
@@ -472,7 +508,9 @@ async function verifyBranchBeforeMerging(data: any, projectDetailsTemp: any) {
         "error occured means the branch wont be there",
         { data, projectDetailsTemp, tempData }
       );
-      showMessageOnScreen("Removing branch as it has been deleted from the origin");
+      showMessageOnScreen(
+        "Removing branch as it has been deleted from the origin"
+      );
     }
   }
 }
@@ -510,7 +548,7 @@ async function verifyBranch(verifyBranchObj: IVerifyBranch) {
     );
     return stdout;
   } catch (error) {
-      throw new Error(error);
+    throw new Error(error);
   }
 }
 async function getTheMergeConflictDiff(
