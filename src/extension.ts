@@ -63,15 +63,17 @@ export function activate(context: vscode.ExtensionContext) {
             ext_data = baseDataStructure(vscode.workspace.name ?? "");
           }
           if (vscode.workspace?.workspaceFolders) {
-            const currentProject = vscode.workspace?.workspaceFolders[0].name;
-
-            if (!Object.keys(ext_data.branch_data).includes(currentProject)) {
-              ext_data = addProjectData(currentProject, ext_data);
-            }
+            const projectsCurrentWorkspace = vscode.workspace?.workspaceFolders;
+            projectsCurrentWorkspace.forEach(res => {
+              
+              if (!Object.keys(ext_data?.branch_data ?? []).includes(res.name)) {
+                ext_data = addProjectData(res.name, ext_data);
+              }
+            });
             currentPanel.webview.html = getWebviewContent();
             sendMessage(SendActionEnum.APPLICATION_DATA, {
               ...ext_data,
-              current_projects: currentProject,
+              current_projects: vscode.workspace?.workspaceFolders[0].name,
             });
           }
         }
@@ -88,8 +90,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 function addProjectData(
   currentProject: string,
-  applicationData: IBaseDataStructure
-): IBaseDataStructure {
+  applicationData: IBaseDataStructure | undefined
+): IBaseDataStructure | undefined {
   const tempBranchData = {
     [StatusIdentifierEnum.MERGING]: <any>[],
     [StatusIdentifierEnum.MERGE_CONFLICTS]: <any>[],
@@ -102,7 +104,9 @@ function addProjectData(
     "addAndRefreshDataToStorage",
     "fresh data adding to project"
   );
-  applicationData.branch_data[currentProject] = tempBranchData;
+  if (applicationData) {
+    applicationData.branch_data[currentProject] = tempBranchData;
+  }
   return applicationData;
 }
 function receiveMessage() {
