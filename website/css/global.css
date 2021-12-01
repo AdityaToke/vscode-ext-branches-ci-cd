@@ -82,6 +82,28 @@ datalist {
 
 .refresh_icon {
   color: #fff;
+  position: relative;
+  display: inline-block;
+}
+
+.refresh_icon .tooltiptext {
+  margin: 0px 2rem;
+  visibility: hidden;
+  width: 120px;
+  top: 100%;
+  left: 20%;
+  margin-left: -60px;
+  background-color: grey;
+  border: 1px solid black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+}
+
+.refresh_icon:hover .tooltiptext {
+  visibility: visible;
 }
 
 input:disabled {

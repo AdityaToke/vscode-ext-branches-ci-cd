@@ -14,7 +14,7 @@ app.controller("customersCtrl", function ($scope, $http) {
         $scope.startAddingData();
         break;
       case "logs":
-        $scope.logsInfo = data;
+        $scope.logsInfo = data.reverse();
         break;
       case "start_refreshing":
         $scope.startRefreshing();
@@ -29,24 +29,24 @@ app.controller("customersCtrl", function ($scope, $http) {
         }
         break;
       case "application_data":
-        $scope.disableAllAction = false;
-        $scope.stashError = false;
-        $scope.projectNotPresentError = false;
-        $scope.applicationData = JSON.parse(JSON.stringify(data));
-        $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
-        $scope.projectsPresentInCurrentWorkspace =
-          data.currentWorkspaceProjects;
-        $scope.projectsPresentInData = data.projectsDetailList.filter(Boolean);
-        if (
-          $scope.projectsPresentInCurrentWorkspace.length === 1 ||
-          !$scope.currentProject
-        ) {
-          $scope.currentProject = $scope.projectsPresentInCurrentWorkspace[0];
-        }
-        // initi variable
-        initializedAppVariable();
-        // add
-        resetAddSectionValue();
+          $scope.disableAllAction = false;
+          $scope.stashError = false;
+          $scope.projectNotPresentError = false;
+          $scope.applicationData = JSON.parse(JSON.stringify(data));
+          $scope.globalApplicationData = JSON.parse(JSON.stringify(data));
+          $scope.projectsPresentInCurrentWorkspace =
+            data.currentWorkspaceProjects;
+          $scope.projectsPresentInData = data.projectsDetailList.filter(Boolean);
+          if (
+            $scope.projectsPresentInCurrentWorkspace.length === 1 ||
+            !$scope.currentProject
+          ) {
+            $scope.currentProject = $scope.projectsPresentInCurrentWorkspace[0];
+          }
+          // initi variable
+          initializedAppVariable();
+          // add
+          resetAddSectionValue();
         break;
 
       case "verify_project":
@@ -86,7 +86,27 @@ app.controller("customersCtrl", function ($scope, $http) {
     }
   };
   $scope.startRefreshing = function () {
-    sendMessageToExtension("refresh_data", {
+    $scope.applicationData.branch_data[$scope.currentProject]["merging"] = [
+      ...$scope.applicationData.branch_data[$scope.currentProject][
+        "ready_to_merge"
+      ],
+      ...$scope.applicationData.branch_data[$scope.currentProject][
+        "merge_conflicts"
+      ],
+      ...$scope.applicationData.branch_data[$scope.currentProject][
+        "up_to_date"
+      ],
+    ];
+    $scope.applicationData.branch_data[$scope.currentProject][
+      "ready_to_merge"
+    ] = [];
+    $scope.applicationData.branch_data[$scope.currentProject][
+      "merge_conflicts"
+    ] = [];
+    $scope.applicationData.branch_data[$scope.currentProject]["up_to_date"] =
+      [];
+    sendMessageToExtension("mergeAll", {
+      items: [...$scope.applicationData.branch_data[$scope.currentProject]["merging"]],
       currentProject: $scope.currentProject,
     });
   };
