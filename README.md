@@ -66,6 +66,9 @@ Please adhere to this project's [Code of conduct](https://github.com/AdityaToke/
 #### 0.0.2
 - Updated the extension name for easy searching in marketplace.
 
+#### 0.0.3
+- Fixed the isses #5, #6 raised on github.
+
 ## License
 
 [MIT](https://github.com/AdityaToke/vscode-ext-branches-ci-cd/blob/master/LICENSE)
