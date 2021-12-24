@@ -64,9 +64,10 @@ export function activate(context: vscode.ExtensionContext) {
           }
           if (vscode.workspace?.workspaceFolders) {
             const projectsCurrentWorkspace = vscode.workspace?.workspaceFolders;
-            projectsCurrentWorkspace.forEach(res => {
-              
-              if (!Object.keys(ext_data?.branch_data ?? []).includes(res.name)) {
+            projectsCurrentWorkspace.forEach((res) => {
+              if (
+                !Object.keys(ext_data?.branch_data ?? []).includes(res.name)
+              ) {
                 ext_data = addProjectData(res.name, ext_data);
               }
             });
@@ -186,7 +187,7 @@ async function resolveConflicts(data: any) {
   const cmd =
     "cd " +
     projectDetailsTemp?.uri.fsPath +
-    ` && git checkout ${data.parent_branch} && git pull && git checkout ${data.child_branch} && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
+    ` && git checkout -- . && git checkout ${data.parent_branch} && git pull && git checkout ${data.child_branch} && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
   log(LogsTypeEnum.COMMAND, "resolveConflicts", "command executed is - ", cmd);
   try {
     await exec(cmd);
@@ -373,12 +374,12 @@ async function mergeData(data: any, isMergeAll = false) {
             data.currentProject
           ].ready_to_merge.filter((x) => x.id !== element.id);
       }
-      verifyBranchBeforeMerging(data, projectDetailsTemp);
+      await verifyBranchBeforeMerging(element, projectDetailsTemp);
       try {
         const cmd =
           "cd " +
           projectDetailsTemp?.uri.fsPath +
-          ` && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}"`;
+          ` && git checkout -- . && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}" && git push && git checkout -- .`;
         log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
 
         const { stdout } = await exec(cmd);
@@ -426,7 +427,7 @@ async function mergeData(data: any, isMergeAll = false) {
           ) {
             // again add the git push command
             // and after that we will add it to up to date.
-            const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push`;
+            const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push && git checkout -- .`;
             log(
               LogsTypeEnum.COMMAND,
               "mergeData",
@@ -449,7 +450,9 @@ async function mergeData(data: any, isMergeAll = false) {
             );
           } else {
             if (
-              error.stdout.toLowerCase().includes("your branch is up to date") &&
+              error.stdout
+                .toLowerCase()
+                .includes("your branch is up to date") &&
               error.stdout.toLowerCase().includes("nothing to commit")
             ) {
               element.is_checked = false;
@@ -483,39 +486,36 @@ async function verifyBranchBeforeMerging(data: any, projectDetailsTemp: any) {
     { data, projectDetailsTemp }
   );
   const tempData = [];
-  for (let index = 0; index < data.items.length; index++) {
-    const element = data.items[index];
-    try {
-      const stdout = await verifyBranch({
-        branch_name: element.parent_branch,
-        project_name: data.currentProject,
-        project_details: projectDetailsTemp,
-        verifyFor: "child",
-      });
-      const stdout2 = await verifyBranch({
-        branch_name: element.child_branch,
-        project_name: data.currentProject,
-        project_details: projectDetailsTemp,
-        verifyFor: "child",
-      });
-      if (stdout && stdout2) {
-        tempData.push(element);
-      } else {
-        showMessageOnScreen(
-          "Removing branch as it has been deleted from the origin"
-        );
-      }
-    } catch (error) {
-      log(
-        LogsTypeEnum.ERROR,
-        "verifyBranchBeforeMerging",
-        "error occured means the branch wont be there",
-        { data, projectDetailsTemp, tempData }
-      );
+  try {
+    const stdout = await verifyBranch({
+      branch_name: data.parent_branch,
+      project_name: data.currentProject,
+      project_details: projectDetailsTemp,
+      verifyFor: "parent",
+    });
+    const stdout2 = await verifyBranch({
+      branch_name: data.child_branch,
+      project_name: data.currentProject,
+      project_details: projectDetailsTemp,
+      verifyFor: "child",
+    });
+    if (stdout && stdout2) {
+      tempData.push(data);
+    } else {
       showMessageOnScreen(
         "Removing branch as it has been deleted from the origin"
       );
     }
+  } catch (error) {
+    log(
+      LogsTypeEnum.ERROR,
+      "verifyBranchBeforeMerging",
+      "error occured means the branch wont be there",
+      { data, projectDetailsTemp, tempData }
+    );
+    showMessageOnScreen(
+      "Removing branch as it has been deleted from the origin"
+    );
   }
 }
 async function verifyBranch(verifyBranchObj: IVerifyBranch) {

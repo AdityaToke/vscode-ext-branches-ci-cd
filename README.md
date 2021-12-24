@@ -67,7 +67,10 @@ Please adhere to this project's [Code of conduct](https://github.com/AdityaToke/
 - Updated the extension name for easy searching in marketplace.
 
 #### 0.0.3
-- Fixed the isses #5, #6 raised on github.
+- Fixed the issues #5, #6 raised on github.
+
+#### 0.0.4
+- Fixed the issues #11 raised on github.
 
 ## License
 
