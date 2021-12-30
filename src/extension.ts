@@ -187,7 +187,7 @@ async function resolveConflicts(data: any) {
   const cmd =
     "cd " +
     projectDetailsTemp?.uri.fsPath +
-    ` && git checkout -- . && git checkout ${data.parent_branch} && git pull && git checkout ${data.child_branch} && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
+    ` && git checkout -- . && git clean -df && git checkout ${data.parent_branch} && git checkout -- . && git clean -df && git pull && git checkout ${data.child_branch} && git checkout -- . && git clean -df && git pull && git add . && git merge ${data.parent_branch} --no-edit && git diff --name-only --diff-filter=U`;
   log(LogsTypeEnum.COMMAND, "resolveConflicts", "command executed is - ", cmd);
   try {
     await exec(cmd);
@@ -197,7 +197,8 @@ async function resolveConflicts(data: any) {
     log(
       LogsTypeEnum.ERROR,
       "resolveConflicts",
-      "Error thrown means it has merge conflicts"
+      "Error thrown means it has merge conflicts",
+      JSON.stringify(error)
     );
     if (error.stdout.toLowerCase().includes("automatic merge failed")) {
       try {
@@ -379,7 +380,7 @@ async function mergeData(data: any, isMergeAll = false) {
         const cmd =
           "cd " +
           projectDetailsTemp?.uri.fsPath +
-          ` && git checkout -- . && git checkout ${element.parent_branch} && git pull && git checkout ${element.child_branch} && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}" && git push && git checkout -- .`;
+          ` && git checkout -- . && git clean -df && git checkout ${element.parent_branch} && git checkout -- . && git clean -df && git pull && git checkout ${element.child_branch} && git checkout -- . && git clean -df && git pull && git add . && git merge ${element.parent_branch} --no-edit && git commit -m "Merged branch '${element.parent_branch}' into ${element.child_branch}" && git push && git checkout -- . && git clean -df`;
         log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd);
 
         const { stdout } = await exec(cmd);
@@ -427,7 +428,10 @@ async function mergeData(data: any, isMergeAll = false) {
           ) {
             // again add the git push command
             // and after that we will add it to up to date.
-            const cmd = "cd " + projectDetailsTemp?.uri.fsPath + ` && git push && git checkout -- .`;
+            const cmd =
+              "cd " +
+              projectDetailsTemp?.uri.fsPath +
+              ` && git push && git checkout -- . && git clean -df`;
             log(
               LogsTypeEnum.COMMAND,
               "mergeData",
@@ -472,6 +476,16 @@ async function mergeData(data: any, isMergeAll = false) {
       }
     }
   }
+
+  // once again safe side clearing if any changes still present, it will get removed
+  // found at very rare scenario.
+  const cmd2 =
+    "cd " +
+    projectDetailsTemp?.uri.fsPath +
+    ` && git checkout -- . && git clean -df`;
+  log(LogsTypeEnum.COMMAND, "mergeData", "command executed is - ", cmd2);
+
+  await exec(cmd2);
   updateApplicationData(tempApplicationData);
   sendMessage(SendActionEnum.APPLICATION_DATA, {
     ...tempApplicationData,
